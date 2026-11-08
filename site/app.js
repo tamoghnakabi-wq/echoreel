@@ -239,9 +239,9 @@
   function size() {
     const dpr = Math.min(2, devicePixelRatio || 1);
     for (const m of mons) {
-      const r = m.canvas.getBoundingClientRect();
-      m.canvas.width = Math.max(1, Math.round(r.width * dpr));
-      m.canvas.height = Math.max(1, Math.round(r.height * dpr));
+      // Size from the frame, not the canvas, so the buffer can never feed back into the layout.
+      m.canvas.width = Math.max(1, Math.round(m.glass.clientWidth * dpr));
+      m.canvas.height = Math.max(1, Math.round(m.glass.clientHeight * dpr));
     }
     // Run the cable between the centres of the outer screens.
     const b = bus.getBoundingClientRect();
