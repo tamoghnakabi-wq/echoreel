@@ -164,21 +164,46 @@ function renderSide() {
       : u?.status === 'installing'
         ? `<div class="watch upd"><div class="hd"><i class="lamp busy"></i>Updating…</div><p>Echoreel ${esc(u.version)} opens in a moment${V.progress ? ', after the current upload' : ''}.</p></div>`
         : '';
-  $('#side').innerHTML = `
+  setHtml($('#side'), `
     <div class="brand">${LOGO}Echoreel</div>
     <nav class="nav">${navs
       .map(([id, label, icon]) => `<button data-act="nav" data-page="${id}" class="${page === id ? 'on' : ''}"><i class="led"></i>${icon}<span>${label}</span>${id === 'activity' && n ? `<span class="badge">${n}</span>` : ''}</button>`)
       .join('')}</nav>
     <div class="spacer"></div>
-    ${upd}<div class="watch">${watch}</div>`;
+    ${upd}<div class="watch">${watch}</div>`);
 }
 
 // ---------- pages ----------
+/** Sections (<details data-key>) the user has opened; they stay open through redraws. */
+const openSections = new Set<string>();
+document.addEventListener(
+  'toggle',
+  (e) => {
+    const d = e.target as HTMLDetailsElement;
+    if (!(d instanceof HTMLDetailsElement) || !d.dataset.key) return;
+    d.open ? openSections.add(d.dataset.key) : openSections.delete(d.dataset.key);
+  },
+  true,
+);
+
+/**
+ * Replace an element's content, but only when it actually changed: the app redraws whenever
+ * anything happens in the background (an update downloading, an account check), and an untouched
+ * page keeps its focus, selection and open sections.
+ */
+const drawn = new WeakMap<Element, string>();
+function setHtml(el: HTMLElement, html: string) {
+  if (drawn.get(el) === html) return;
+  drawn.set(el, html);
+  el.innerHTML = html;
+  for (const d of el.querySelectorAll<HTMLDetailsElement>('details[data-key]')) d.open = openSections.has(d.dataset.key!);
+}
+
 function renderPage() {
   if (!V) return;
   const m = $('#main');
   const top = m.scrollTop;
-  m.innerHTML = `<div class="page">${({ activity, post: postPage, connections, rules, settings } as any)[page]()}</div>`;
+  setHtml(m, `<div class="page">${({ activity, post: postPage, connections, rules, settings } as any)[page]()}</div>`);
   m.scrollTop = top;
   if (page === 'settings' && !tools) api.toolsInfo().then((t: any) => ((tools = t), page === 'settings' && renderPage()));
 }
@@ -417,7 +442,7 @@ function connCard(p: Platform) {
         ${a.status === 'reconnect' ? '' : `<button class="btn small" data-act="checkOne" data-p="${p}">${I.refresh}Check now</button>`}
         ${p !== 'instagram' ? `<button class="btn small ${a.status === 'reconnect' ? 'primary' : ''}" data-act="connect" data-p="${p}" ${busy ? 'disabled' : ''}>${busy ? 'Waiting for browser…' : 'Reconnect'}</button>` : ''}
         <button class="btn small ghost danger" data-act="disconnect" data-p="${p}">Disconnect</button></div>
-      ${p === 'instagram' ? `<details class="guide" style="margin-top:14px"><summary>Use a new token</summary><div style="padding:0 14px 14px"><input type="password" placeholder="IGAA…" data-draft="ig:token" value="${esc(draft('ig:token'))}"><button class="btn small" style="margin-top:10px" data-act="connect" data-p="instagram">Update token</button></div></details>` : ''}`;
+      ${p === 'instagram' ? `<details class="guide" data-key="ig-token" style="margin-top:14px"><summary>Use a new token</summary><div style="padding:0 14px 14px"><input type="password" placeholder="IGAA…" data-draft="ig:token" value="${esc(draft('ig:token'))}"><button class="btn small" style="margin-top:10px" data-act="connect" data-p="instagram">Update token</button></div></details>` : ''}`;
   } else {
     const fields =
       p === 'youtube'
@@ -430,7 +455,7 @@ function connCard(p: Platform) {
     body = `<p>${
       p === 'youtube' ? 'Reads your new uploads and prepares (or posts) Shorts.' : p === 'instagram' ? 'Reads your new reels and posts reels. Needs a Creator or Business account.' : 'Reads your new videos and sends videos to your TikTok inbox.'
     }</p>
-      <details class="guide"><summary>How to set up (one time)</summary>${GUIDES[p]()}</details>
+      <details class="guide" data-key="guide-${p}"><summary>How to set up (one time)</summary>${GUIDES[p]()}</details>
       ${fields}${err}
       <div class="acts" style="margin-top:18px"><button class="btn primary" data-act="connect" data-p="${p}" ${busy ? 'disabled' : ''}>${busy ? (p === 'instagram' ? 'Checking…' : 'Finish signing in in your browser…') : `Connect ${NAMES[p]}`}</button></div>`;
   }
@@ -579,12 +604,19 @@ document.addEventListener('input', (e) => {
 
 document.addEventListener('change', async (e) => {
   const el = e.target as HTMLInputElement;
+  // The control no longer matches what was drawn: redraw it from the saved state next time, so a
+  // change that fails to save snaps back.
+  drawn.delete($('#main'));
   if (el.dataset.draft && el.type === 'checkbox') drafts[el.dataset.draft] = el.checked ? 'on' : 'off';
   if (el.dataset.route) {
     const [from, to] = el.dataset.route.split(':');
     const routes = JSON.parse(JSON.stringify(V.settings.routes));
     routes[from][to] = el.checked;
-    await api.setSettings({ routes });
+    try {
+      await api.setSettings({ routes });
+    } catch (err) {
+      toast(String((err as Error).message), true);
+    }
     return refresh();
   }
   const key = el.dataset.set;

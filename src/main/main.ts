@@ -405,11 +405,17 @@ async function screenshots(dir: string) {
   win!.webContents.setBackgroundThrottling(false);
   await wait(2500);
   for (const spec of (process.env.ECHOREEL_SHOT_PAGES ?? 'activity,post,connections,rules,settings').split(',')) {
-    // "page@jobId" opens a job; "page~600" scrolls the page down 600 px.
-    const [target, scroll] = spec.split('~');
+    // "page@jobId" opens a job; "page~600" scrolls the page down 600 px; "page+key" opens the
+    // section <details data-key="key"> as a click would.
+    const [nav, open] = spec.split('+');
+    const [target, scroll] = nav.split('~');
     const [page, jobId] = target.split('@');
     win!.webContents.send('navigate', { page, jobId });
     await wait(1200);
+    if (open) {
+      await win!.webContents.executeJavaScript(`document.querySelector('details[data-key=${JSON.stringify(open)}]').open = true`);
+      await wait(300);
+    }
     if (scroll) {
       await win!.webContents.executeJavaScript(`document.querySelector('main').scrollTop = ${Number(scroll)}`);
       await wait(300);
@@ -417,7 +423,9 @@ async function screenshots(dir: string) {
     // A window in the background can hand back its last frame: ask for a fresh one first.
     win!.webContents.invalidate();
     await wait(300);
-    writeFileSync(join(dir, `${spec.replace(/[@~]/g, '-')}.png`), (await win!.webContents.capturePage()).toPNG());
+    const opened = await win!.webContents.executeJavaScript(`[...document.querySelectorAll('details[open]')].map((d) => d.dataset.key).join(',') || 'none'`);
+    log(`shot ${spec}: open sections ${opened}`);
+    writeFileSync(join(dir, `${spec.replace(/[@~+]/g, '-')}.png`), (await win!.webContents.capturePage()).toPNG());
   }
   quitting = true;
   app.exit(0);
