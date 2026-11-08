@@ -7,3 +7,4 @@ tools/
 .DS_Store
 *.log
 .secrets/
+.env*
