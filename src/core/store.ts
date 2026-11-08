@@ -26,8 +26,13 @@ export class Store {
       s.items ??= {};
       s.jobs ??= [];
       s.flags ??= {};
-      // A job that was running when the app quit starts over from its first unfinished step.
-      for (const j of s.jobs) if (j.status === 'running') j.status = 'waiting';
+      // A job that was running when the app quit starts over from its first unfinished step. A
+      // destination it was in the middle of goes back in the queue (an upload handle, if any, is
+      // kept so it can resume).
+      for (const j of s.jobs) {
+        if (j.status === 'running') j.status = 'waiting';
+        for (const t of j.targets) if (t.status === 'preparing' || t.status === 'uploading' || t.status === 'processing') t.status = 'pending';
+      }
       return s;
     } catch (e) {
       // Keep the broken file for inspection rather than overwriting it.

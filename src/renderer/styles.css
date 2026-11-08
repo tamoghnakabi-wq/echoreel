@@ -1189,6 +1189,16 @@ label.field > span {
   padding-right: 14px;
   text-align: right;
 }
+/* The title column takes the room that's left and truncates, so a row never runs past the card
+   (in a narrow window the "Relay anyway" buttons were cut off). */
+.seen td:nth-child(2) {
+  width: 100%;
+  max-width: 0;
+}
+.seen .pill,
+.seen .btn {
+  white-space: nowrap;
+}
 .seen .t {
   color: var(--legend);
   display: block;

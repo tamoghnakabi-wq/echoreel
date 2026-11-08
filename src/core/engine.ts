@@ -1,4 +1,5 @@
-import { copyFileSync, existsSync, mkdirSync, readdirSync, rmSync, statSync } from 'node:fs';
+import { existsSync, mkdirSync, readdirSync, rmSync, statSync } from 'node:fs';
+import { copyFile } from 'node:fs/promises';
 import { basename, extname, join } from 'node:path';
 import { download, fingerprint, isVertical, prepare, probe, sameVideo } from './media';
 import type { Connected, Ctx, PlatformApi, Session } from './platforms/common';
@@ -29,6 +30,7 @@ import { clip, newId, titleFrom } from './util';
 
 const APIS: Record<Platform, PlatformApi> = { youtube, instagram, tiktok };
 const RETRY_MINUTES = [1, 5, 15, 60, 180];
+const SHORTS_ONLY = 'not a Short (Rules → "Only relay YouTube Shorts")';
 /** Never relay a video that was already this old when Echoreel first saw it. */
 const MAX_AGE_MS = 7 * 86400_000;
 /** How long a hand-finished upload (TikTok inbox, YouTube Studio) is expected to show up. */
@@ -58,6 +60,8 @@ export class Engine {
   ) {
     this.store = new Store(host);
     this.tunnel = new FileTunnel(tools, (m) => host.log(m), opts.tunnelBase);
+    // Jobs that can no longer move (Echoreel 0.1.0 could leave these behind) get their final status.
+    for (const j of this.store.state.jobs) if (j.status === 'waiting' && !j.targets.some((t) => t.status === 'pending')) this.settle(j);
   }
 
   get settings(): Settings {
@@ -245,6 +249,8 @@ export class Engine {
 
     const dests = this.destinations(v.platform);
     if (!dests.length) return save('skipped', 'no other connected platform is switched on for it in Rules');
+    // Too long to be a Short: no need to download it to find that out.
+    if (v.platform === 'youtube' && this.settings.youtubeShortsOnly && (v.duration ?? 0) > 180.5) return save('skipped', SHORTS_ONLY);
     const job = this.newJob({
       source: key,
       sourcePlatform: v.platform,
@@ -326,15 +332,25 @@ export class Engine {
   }
 
   /** Post a file from this computer to the chosen platforms. */
-  post(req: PostRequest): Job {
+  async post(req: PostRequest): Promise<Job> {
     if (!existsSync(req.file)) throw new Error('That file no longer exists.');
     const platforms = req.platforms.filter((p) => this.store.state.accounts[p]);
     if (!platforms.length) throw new Error('Pick at least one connected platform.');
     const job = this.newJob({ source: `upload:${basename(req.file)}`, title: req.title, caption: req.caption, platforms, approved: true });
-    const dir = this.jobDir(job);
-    const dest = join(dir, 'source' + (extname(req.file) || '.mp4'));
-    copyFileSync(req.file, dest);
+    // Copy the video first (a large file takes a while), and keep the job out of the queue meanwhile.
+    job.status = 'running';
+    this.logJob(job, 'copying the video');
+    this.store.changed();
+    const dest = join(this.jobDir(job), 'source' + (extname(req.file) || '.mp4'));
+    try {
+      await copyFile(req.file, dest);
+    } catch (e) {
+      this.store.state.jobs = this.store.state.jobs.filter((j) => j !== job);
+      this.store.changed();
+      throw new Error(`Couldn't copy the video: ${(e as Error).message}`);
+    }
     job.file = dest;
+    job.status = 'waiting';
     this.store.changed();
     void this.work();
     return job;
@@ -347,12 +363,18 @@ export class Engine {
       if (!t) continue;
       if (e.title !== undefined) t.title = e.title;
       if (e.caption !== undefined) t.caption = e.caption;
-      if (e.skip) t.status = 'skipped';
+      if (e.skip && t.status === 'pending') t.status = 'skipped';
     }
     job.approved = true;
     if (job.status === 'approval') {
       job.status = 'waiting';
       job.notBefore = Date.now();
+      this.settle(job);
+      if ((job.status as Job['status']) === 'cancelled') {
+        this.logJob(job, 'not relayed: every destination was switched off');
+        const item = this.store.state.items[job.source];
+        if (item) item.status = 'ignored';
+      }
     }
     this.store.changed();
     void this.work();
@@ -496,7 +518,7 @@ export class Engine {
     try {
       // 1. Get the video.
       if (!job.file || !existsSync(job.file)) {
-        if (!job.sourceUrl) throw new PermanentError('nothing to download');
+        if (!job.sourceUrl) throw new PermanentError('the video file is missing; post it again');
         this.logJob(job, `downloading from ${this.describeSource(job)}`);
         this.setProgress(job, 'Downloading');
         job.file = await download(this.tools, job.sourceUrl, !!job.direct, dir, this.settings, (pct) => this.setProgress(job, 'Downloading', undefined, pct));
@@ -536,7 +558,7 @@ export class Engine {
           const item = this.store.state.items[job.source];
           if (item) {
             item.status = 'skipped';
-            item.reason = 'not a Short (Rules → "Only relay YouTube Shorts")';
+            item.reason = SHORTS_ONLY;
           }
           this.logJob(job, 'skipped: not a Short (vertical and up to 3 minutes)');
           return;
@@ -639,6 +661,11 @@ export class Engine {
   private settle(job: Job) {
     if (job.status === 'cancelled' || job.status === 'approval') return;
     const ts = job.targets;
+    // Every destination switched off: nothing to post.
+    if (ts.every((t) => t.status === 'skipped')) {
+      job.status = 'cancelled';
+      return;
+    }
     if (ts.some((t) => t.status === 'pending')) {
       job.status = 'waiting';
       const next = Math.min(...ts.filter((t) => t.status === 'pending').map((t) => t.nextAttemptAt ?? 0));

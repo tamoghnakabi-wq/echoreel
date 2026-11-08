@@ -87,19 +87,32 @@ function short(t?: number) {
 const list = (xs: string[]) => (xs.length < 2 ? xs.join('') : `${xs.slice(0, -1).join(', ')} and ${xs.at(-1)}`);
 
 // ---------- data ----------
-let refreshing = false;
+let refreshing: Promise<void> | null = null;
+let refreshAgain = false;
 let pendingRender = false;
-async function refresh() {
-  if (refreshing) return;
-  refreshing = true;
-  try {
-    V = await api.view();
-  } finally {
-    refreshing = false;
+/**
+ * Fetch the latest state and redraw. One fetch at a time: a change that arrives mid-fetch is
+ * fetched (and drawn) right after, so the window never stays on a stale picture.
+ */
+function refresh(): Promise<void> {
+  if (refreshing) {
+    refreshAgain = true;
+    return refreshing;
   }
-  renderSide();
-  if (typing()) pendingRender = true;
-  else renderPage();
+  refreshing = (async () => {
+    try {
+      do {
+        refreshAgain = false;
+        V = await api.view();
+        renderSide();
+        if (typing()) pendingRender = true;
+        else renderPage();
+      } while (refreshAgain);
+    } finally {
+      refreshing = null;
+    }
+  })();
+  return refreshing;
 }
 const typing = () => {
   const a = document.activeElement as HTMLElement | null;
@@ -197,9 +210,9 @@ function activity() {
         ? `<div class="onair"><span class="tag"><i class="lamp"></i>Relaying</span><div class="grow"><div class="ellipsis"><b>${esc(p.label)}</b> <span class="muted">${esc(jobs.find((j) => j.id === p.jobId)?.title ?? '')}</span></div><div class="bar ${p.pct == null ? 'indef' : ''}"><i style="width:${p.pct ?? 30}%"></i></div></div></div>`
         : ''
     }
-    ${attention.length ? `${sec('Needs you', attention.length, 'warn')}${attention.map((j) => `<div class="card job attention">${jobRow(j, true, openJobs.has(j.id))}</div>`).join('')}` : ''}
+    ${attention.length ? `${sec('Needs you', attention.length, 'warn')}${attention.map((j) => `<div class="card job attention" data-job="${esc(j.id)}">${jobRow(j, true, openJobs.has(j.id))}</div>`).join('')}` : ''}
     ${sec('Relays', others.length)}
-    ${others.length ? `<div class="card rundown">${others.map((j) => `<div class="job ${j.status === 'running' ? 'live' : ''}">${jobRow(j, openJobs.has(j.id))}</div>`).join('')}</div>` : `<div class="card empty">${I.video}<p>No relays yet. Upload a video to one of your accounts, or post one from here.</p></div>`}
+    ${others.length ? `<div class="card rundown">${others.map((j) => `<div class="job ${j.status === 'running' ? 'live' : ''}" data-job="${esc(j.id)}">${jobRow(j, openJobs.has(j.id))}</div>`).join('')}</div>` : `<div class="card empty">${I.video}<p>No relays yet. Upload a video to one of your accounts, or post one from here.</p></div>`}
     ${sec('Videos seen on your accounts')}
     ${seenTable()}`;
 }
@@ -528,7 +541,7 @@ function settings() {
     <div class="card">
       ${updateRow()}
       <div class="opt"><div class="grow"><div class="t">Data folder</div><div class="d mono ellipsis">${esc(V.app.dataDir)}</div></div><button class="btn small" data-act="openData">Open</button><button class="btn small ghost" data-act="openLog">Log</button></div>
-      <div class="opt"><div class="grow"><div class="t">Video tools</div><div class="d mono">${tools ? `ffmpeg ${esc(tools.ffmpeg.replace(/^ffmpeg version /, '').split(' ')[0])}, yt-dlp ${esc(tools.ytdlp)}, ${esc(tools.cloudflared.replace(/ \(built.*/, ''))}` : 'checking…'}</div></div><button class="btn small" data-act="updateYtdlp">Update yt-dlp</button></div>
+      <div class="opt"><div class="grow"><div class="t">Video tools</div><div class="d mono">${tools ? `ffmpeg ${esc(tools.ffmpeg.replace(/^ffmpeg version /, '').split(' ')[0])}, yt-dlp ${esc(tools.ytdlp)}, cloudflared ${esc(tools.cloudflared.replace(/^cloudflared version /, '').split(' ')[0])}` : 'checking…'}</div></div><button class="btn small" data-act="updateYtdlp">Update yt-dlp</button></div>
       <div class="opt"><div class="grow"><div class="t">About</div><div class="d">Echoreel is free and open source (MIT). <a href="https://echoreel.vercel.app" target="_blank">Website</a>, <a href="https://github.com/tamoghnakabi-wq/echoreel" target="_blank">source code</a> and <a href="https://github.com/tamoghnakabi-wq/echoreel/releases" target="_blank">release notes</a>.</div></div></div>
     </div>`;
 }
@@ -629,6 +642,7 @@ document.addEventListener('click', async (e) => {
         break;
       case 'approve': {
         const j = V.jobs.find((x: any) => x.id === d.id);
+        if (!j) break; // already handled elsewhere (the list redraws on its own)
         const edits = j.targets.map((t: any) => ({
           platform: t.platform,
           title: drafts[`title:${j.id}:${t.platform}`],
@@ -636,7 +650,7 @@ document.addEventListener('click', async (e) => {
           skip: drafts[`skip:${j.id}:${t.platform}`] === 'off',
         }));
         await api.approve(d.id, edits);
-        toast('Relaying…');
+        toast(edits.every((x: any) => x.skip) ? 'Not relayed: every destination was switched off' : 'Relaying…');
         break;
       }
       case 'cancel':
@@ -792,7 +806,10 @@ document.addEventListener('drop', async (e) => {
   e.preventDefault();
   const f = e.dataTransfer?.files?.[0];
   if (!f) return;
-  if (page !== 'post') page = 'post';
+  if (page !== 'post') {
+    page = 'post';
+    $('#main').scrollTop = 0;
+  }
   await setPostFile(api.pathFor(f));
   renderSide();
 });
@@ -800,10 +817,13 @@ document.addEventListener('drop', async (e) => {
 // ---------- start ----------
 if (navigator.userAgent.includes('Mac')) document.body.classList.add('mac');
 api.onChanged(() => refresh());
-api.onNavigate((nav) => {
+api.onNavigate(async (nav) => {
+  // From a notification or the menu bar: open the page at the top, or at the job it's about.
+  if (page !== nav.page) $('#main').scrollTop = 0;
   page = nav.page;
   if (nav.jobId) openJobs.add(nav.jobId);
-  refresh();
+  await refresh();
+  if (nav.jobId) $(`[data-job="${CSS.escape(nav.jobId)}"]`)?.scrollIntoView({ block: 'start' });
 });
 setInterval(() => !typing() && refresh(), 30_000); // keep "x min ago" fresh
 refresh();

@@ -1,5 +1,6 @@
 import { createHash, randomBytes } from 'node:crypto';
-import { createServer } from 'node:http';
+import { createServer, type ServerResponse } from 'node:http';
+import { clip } from './util';
 
 /** The fixed local address Google and TikTok send the sign-in back to. */
 export const OAUTH_PORT = 47621;
@@ -14,10 +15,15 @@ export function pkce(encoding: 'base64url' | 'hex') {
 
 export const newState = () => randomBytes(16).toString('hex');
 
+const esc = (s: string) => s.replace(/[&<>"']/g, (c) => `&#${c.charCodeAt(0)};`);
 const page = (title: string, body: string, ok: boolean) => `<!doctype html><meta charset="utf-8"><title>${title}</title>
 <style>body{font:16px/1.5 -apple-system,Segoe UI,sans-serif;background:#0d0d12;color:#eee;display:grid;place-items:center;height:100vh;margin:0}
 div{max-width:460px;text-align:center}h1{font-size:22px;color:${ok ? '#7ef0b0' : '#ff8a8a'}}p{color:#aaa}</style>
-<div><h1>${title}</h1><p>${body}</p></div>`;
+<div><h1>${esc(title)}</h1><p>${esc(body)}</p></div>`;
+
+function reply(res: ServerResponse, status: number, html: string, then?: () => void) {
+  res.writeHead(status, { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-store', Connection: 'close' }).end(html, then);
+}
 
 /**
  * Wait for one sign-in redirect on 127.0.0.1:OAUTH_PORT at `path`, check its state,
@@ -33,14 +39,21 @@ export function waitForCode(path: string, state: string, open: () => void): Prom
       }
       const err = url.searchParams.get('error');
       const code = url.searchParams.get('code');
-      if (err || !code || url.searchParams.get('state') !== state) {
-        const why = err ? `${err}${url.searchParams.get('error_description') ? ': ' + url.searchParams.get('error_description') : ''}` : 'the sign-in response did not match';
-        res.writeHead(400, { 'Content-Type': 'text/html; charset=utf-8' }).end(page('Not connected', why, false));
-        finish(new Error(`sign-in was not completed (${why})`));
+      const got = url.searchParams.get('state');
+      // A response for some other sign-in (an old tab, or another page poking this port) is
+      // turned away without ending the one Echoreel is waiting for.
+      if (got !== state && !(err && got === null)) {
+        reply(res, 400, page('Not connected', 'This sign-in link is out of date. Finish signing in from the tab Echoreel opened.', false));
         return;
       }
-      res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' }).end(page('Connected', 'Echoreel has the permission it asked for. You can close this tab and go back to the app.', true));
-      finish(null, code);
+      if (err || !code) {
+        const desc = url.searchParams.get('error_description');
+        const why = clip(err ? `${err}${desc ? ': ' + desc : ''}` : 'no authorization code came back', 200);
+        // Close the server only once the browser has the page.
+        reply(res, 400, page('Not connected', why, false), () => finish(new Error(`sign-in was not completed (${why})`)));
+        return;
+      }
+      reply(res, 200, page('Connected', 'Echoreel has the permission it asked for. You can close this tab and go back to the app.', true), () => finish(null, code));
     });
     const timer = setTimeout(() => finish(new Error('sign-in timed out after 5 minutes')), 5 * 60_000);
     let done = false;

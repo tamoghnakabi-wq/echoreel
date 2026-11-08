@@ -2,7 +2,7 @@
 // with real ffmpeg/ffprobe/yt-dlp. Run: npm test  (or ECHOREEL_TOOLS=<dir> to use bundled tools)
 import assert from 'node:assert/strict';
 import { execFileSync } from 'node:child_process';
-import { existsSync, mkdtempSync, rmSync } from 'node:fs';
+import { existsSync, mkdirSync, mkdtempSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { createRequire } from 'node:module';
@@ -147,6 +147,15 @@ try {
     assert.match(S.items[`youtube:${id}`].reason, /not a Short/);
   });
 
+  await step('a YouTube upload too long to be a Short is skipped before it is downloaded', async () => {
+    const before = S.jobs.length;
+    const { id } = await call('/_test/youtube/add', { file: V.ytLong, title: 'Hour-long stream', duration: 3600 });
+    await engine.tick();
+    assert.equal(S.items[`youtube:${id}`].status, 'skipped');
+    assert.match(S.items[`youtube:${id}`].reason, /not a Short/);
+    assert.equal(S.jobs.length, before, 'no job, so nothing downloaded');
+  });
+
   let reelJob;
   await step('new Instagram reel → YouTube (API upload) + TikTok', async () => {
     const { id } = await call('/_test/instagram/add', { file: V.igReel, caption: 'Cellular automaton 🧬\nwatch it grow #science' });
@@ -182,7 +191,7 @@ try {
   });
 
   await step('post a file from the app to all three', async () => {
-    const job = engine.post({ file: V.local, title: 'Bars', caption: 'Posted once, everywhere #echoreel', platforms: ['youtube', 'instagram', 'tiktok'] });
+    const job = await engine.post({ file: V.local, title: 'Bars', caption: 'Posted once, everywhere #echoreel', platforms: ['youtube', 'instagram', 'tiktok'] });
     await engine.work();
     assert.equal(job.status, 'done', JSON.stringify(job.targets.map((t) => [t.platform, t.status, t.error])));
     await engine.tick();
@@ -205,11 +214,27 @@ try {
     engine.settings.approval = 'auto';
   });
 
+  let allOff;
+  await step('approving with every destination switched off relays nothing (and does not hang)', async () => {
+    engine.settings.approval = 'ask';
+    const media = (await state()).ig.media.length;
+    const { id } = await call('/_test/youtube/add', { file: makeVideo('yt-off.mp4', { w: 720, h: 1280, secs: 4, src: 'cellauto=rule=30:random_seed=3' }), title: 'Not this one', duration: 4 });
+    await engine.tick();
+    allOff = jobFor(`youtube:${id}`);
+    assert.equal(allOff.status, 'approval');
+    engine.approve(allOff.id, allOff.targets.map((t) => ({ platform: t.platform, skip: true })));
+    await engine.work();
+    assert.equal(allOff.status, 'cancelled');
+    assert.equal(S.items[`youtube:${id}`].status, 'ignored');
+    assert.equal((await state()).ig.media.length, media);
+    engine.settings.approval = 'auto';
+  });
+
   await step('a temporary platform error is retried; a processing error fails clearly', async () => {
     await call('/_test/fault', { name: 'tt-init' });
     await call('/_test/fault', { name: 'ig-process' });
     const local2 = makeVideo('local2.mp4', { w: 720, h: 1280, secs: 4, src: 'testsrc' });
-    const job = engine.post({ file: local2, title: 'Retry me', caption: 'retry', platforms: ['instagram', 'tiktok'] });
+    const job = await engine.post({ file: local2, title: 'Retry me', caption: 'retry', platforms: ['instagram', 'tiktok'] });
     await engine.work();
     const ig = job.targets.find((t) => t.platform === 'instagram');
     const tt = job.targets.find((t) => t.platform === 'tiktok');
@@ -259,15 +284,86 @@ try {
   });
 
   await step('state survives a restart and nothing is relayed twice', async () => {
+    // An upload Echoreel quit in the middle of: YouTube has the video, Echoreel hasn't heard yet.
+    const cut = await engine.post({ file: V.local, title: 'Cut off', caption: 'cut off', platforms: ['youtube'] });
+    await engine.work();
+    const yt = cut.targets[0];
+    assert.equal(yt.status, 'done');
+    const videoId = yt.resultId;
+    const videos = (await state()).yt.videos.length;
+    Object.assign(cut, { status: 'running' });
+    Object.assign(yt, { status: 'uploading', resultId: undefined, resultUrl: undefined, doneAt: undefined });
+    // What Echoreel 0.1.0 left behind when every destination was switched off: a job stuck waiting.
+    allOff.status = 'waiting';
+    engine.store.flush();
     engine.stop();
     const before = S.jobs.length;
     engine = new Engine(makeHost(), tools, mockHosts(mock.base), { tunnelBase: 'http://127.0.0.1:{port}' });
     Object.assign(engine.settings, { holdMinutes: 0, pollMinutes: 0 });
+    const jobs = engine.store.state.jobs;
+    assert.equal(jobs.find((j) => j.id === allOff.id).status, 'cancelled');
+    const resumed = jobs.find((j) => j.id === cut.id);
+    assert.deepEqual([resumed.status, resumed.targets[0].status], ['waiting', 'pending']);
+    await engine.work();
+    assert.equal(resumed.status, 'done', JSON.stringify(resumed.targets));
+    assert.equal(resumed.targets[0].resultId, videoId, 'same YouTube video');
+    assert.equal((await state()).yt.videos.length, videos, 'not uploaded a second time');
     await engine.tick();
     assert.equal(engine.store.state.jobs.length, before);
     assert.ok(engine.view().jobs.length > 0);
     assert.equal(JSON.stringify(engine.view()).includes(mock.S.ig.token), false, 'no tokens in the UI view');
   });
+
+  await step('the sign-in page escapes what it shows and ignores answers meant for another sign-in', async () => {
+    const cb = `http://127.0.0.1:${core.OAUTH_PORT}/test/callback`;
+    let pages, opened;
+    // Plays the browser once Echoreel is listening.
+    const browse = async () => {
+      const stray = await fetch(`${cb}?code=stolen&state=old`);
+      // No state: a provider's own refusal, which ends the sign-in.
+      const refused = await fetch(`${cb}?error=access_denied&error_description=${encodeURIComponent('<script>alert(1)</script>')}`);
+      pages = [stray.status, refused.status, await refused.text()];
+    };
+    const code = await core.waitForCode('/test/callback', 'right-state', () => (opened = browse())).catch((e) => e);
+    await opened;
+    assert.deepEqual(pages.slice(0, 2), [400, 400]);
+    assert.ok(!pages[2].includes('<script>alert') && pages[2].includes('&#60;script&#62;'), pages[2]);
+    assert.match(String(code), /access_denied/);
+    const ok = await core.waitForCode('/test/callback', 's2', () => {
+      void fetch(`${cb}?code=nope&state=stale`).then(() => fetch(`${cb}?code=the-code&state=s2`));
+    });
+    assert.equal(ok, 'the-code');
+  });
+
+  await step('camera formats MP4 cannot carry as they are get converted for YouTube (ProRes, PCM audio)', async () => {
+    const dir = join(scratch, 'prep');
+    mkdirSync(dir, { recursive: true });
+    const cam = (name, v, a) => {
+      const out = join(scratch, name);
+      execFileSync(tools.ffmpeg, ['-y', '-v', 'error', '-f', 'lavfi', '-i', 'testsrc2=size=720x1280:rate=30', '-f', 'lavfi', '-i', 'sine=frequency=440:duration=3', '-t', '3', '-c:v', v, '-c:a', a, out]);
+      return out;
+    };
+    for (const [src, want] of [
+      [cam('pcm.mov', 'libx264', 'pcm_s16le'), 'h264+aac'],
+      [cam('prores.mov', 'prores_ks', 'pcm_s16le'), 'h264+aac'],
+    ]) {
+      const out = await core.prepare(tools, src, await core.probe(tools, src), 'youtube', engine.settings, dir);
+      const st = probeFile(out).streams;
+      assert.equal(`${st.find((x) => x.codec_type === 'video').codec_name}+${st.find((x) => x.codec_type === 'audio').codec_name}`, want, src);
+    }
+  });
+
+  if (process.platform !== 'win32')
+    await step("a download picks yt-dlp's finished file, not its leftovers", async () => {
+      const dir = join(scratch, 'dl');
+      mkdirSync(dir, { recursive: true });
+      for (const f of ['source.f137.mp4', 'source.f140.m4a', 'source.temp.mp4']) writeFileSync(join(dir, f), 'x');
+      const fake = join(scratch, 'fake-yt-dlp');
+      writeFileSync(fake, `#!/bin/sh\ncp "${V.local}" "${join(dir, 'source.mp4')}"\n`, { mode: 0o755 });
+      const got = await core.download({ ...tools, ytdlp: fake }, 'https://example.invalid/v', false, dir, engine.settings);
+      assert.equal(got, join(dir, 'source.mp4'));
+      assert.ok(readdirSync(dir).includes('source.f137.mp4'));
+    });
 
   console.log(`\n${passed} steps passed`);
 } finally {

@@ -298,9 +298,12 @@ function setSettings(patch: Partial<Settings> & { openAtLogin?: boolean }) {
   if (!s.paused) void engine.work();
 }
 
+// Windows starts the app at login with --hidden. macOS can't pass arguments to a login item, so
+// there the app asks how it was opened instead (see startup).
+const LOGIN_ARGS = isWin ? { args: ['--hidden'] } : {};
 function setLoginItem(on: boolean) {
   if (!app.isPackaged) return;
-  app.setLoginItemSettings({ openAtLogin: on, args: ['--hidden'], ...(process.platform === 'darwin' ? { openAsHidden: true } : {}) });
+  app.setLoginItemSettings({ openAtLogin: on, ...LOGIN_ARGS });
 }
 
 // ---------- IPC ----------
@@ -323,7 +326,7 @@ function registerIpc() {
       update: updater.state,
       platform: process.platform,
       dataDir: dataDir(),
-      openAtLogin: app.isPackaged ? app.getLoginItemSettings().openAtLogin : false,
+      openAtLogin: app.isPackaged ? app.getLoginItemSettings(LOGIN_ARGS).openAtLogin : false,
       packaged: app.isPackaged,
       redirects: { google: GOOGLE_REDIRECT, tiktok: TIKTOK_REDIRECT },
       encrypted: safeStorage.isEncryptionAvailable(),
@@ -342,7 +345,7 @@ function registerIpc() {
     else checkAll();
     void engine.work();
   });
-  handle('post', (req) => engine.post(req).id);
+  handle('post', async (req) => (await engine.post(req)).id);
   handle('approve', (id: string, edits) => engine.approve(id, edits));
   handle('cancel', (id: string) => engine.cancel(id));
   handle('retry', (id: string) => engine.retry(id));
@@ -394,8 +397,12 @@ function registerIpc() {
 async function screenshots(dir: string) {
   const wait = (ms: number) => new Promise((r) => setTimeout(r, ms));
   mkdirSync(dir, { recursive: true });
-  win!.setSize(1240, 860);
+  const [w, h] = (process.env.ECHOREEL_SHOT_SIZE ?? '1240x860').split('x').map(Number);
+  win!.setSize(w, h);
   win!.showInactive();
+  win!.webContents.on('console-message', (e) => log(`renderer ${e.level}: ${e.message}`));
+  // The window stays behind other apps: keep it painting at full speed so captures are current.
+  win!.webContents.setBackgroundThrottling(false);
   await wait(2500);
   for (const spec of (process.env.ECHOREEL_SHOT_PAGES ?? 'activity,post,connections,rules,settings').split(',')) {
     // "page@jobId" opens a job; "page~600" scrolls the page down 600 px.
@@ -407,6 +414,9 @@ async function screenshots(dir: string) {
       await win!.webContents.executeJavaScript(`document.querySelector('main').scrollTop = ${Number(scroll)}`);
       await wait(300);
     }
+    // A window in the background can hand back its last frame: ask for a fresh one first.
+    win!.webContents.invalidate();
+    await wait(300);
     writeFileSync(join(dir, `${spec.replace(/[@~]/g, '-')}.png`), (await win!.webContents.capturePage()).toPNG());
   }
   quitting = true;
@@ -462,7 +472,8 @@ async function main() {
   }
   app.on('second-instance', () => showWindow());
   await app.whenReady();
-  log(`Echoreel ${__VERSION__} starting (data in ${dataDir()})`);
+  if (process.platform === 'darwin' && app.isPackaged && app.getLoginItemSettings().wasOpenedAtLogin) HIDDEN = true;
+  log(`Echoreel ${__VERSION__} starting (data in ${dataDir()})${HIDDEN ? ', in the background' : ''}`);
   updater = new Updater({
     dataDir,
     log,

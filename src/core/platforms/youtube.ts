@@ -123,6 +123,8 @@ export const youtube: PlatformApi = {
     };
     p.stage('uploading');
     let session = t.handle;
+    // A session from before a restart: ask YouTube how far it got instead of sending it all again.
+    const resumed = !!session;
     if (!session) {
       const res = await fetch(`${ctx.hosts.youtube}/upload/youtube/v3/videos?uploadType=resumable&part=snippet,status`, {
         method: 'POST',
@@ -142,7 +144,7 @@ export const youtube: PlatformApi = {
     // Upload, resuming from where YouTube says it got to if the connection drops.
     for (let attempt = 0; attempt < 5; attempt++) {
       let start = 0;
-      if (attempt > 0) {
+      if (attempt > 0 || resumed) {
         const q = await fetch(session, { method: 'PUT', headers: { Authorization: `Bearer ${await s.token()}`, 'Content-Range': `bytes */${size}` } });
         if (q.status === 200 || q.status === 201) return done(await q.json());
         if (q.status === 404) {

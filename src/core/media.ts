@@ -52,6 +52,10 @@ export const LIMITS: Record<Platform, { maxSeconds: number; minSeconds: number; 
 
 export const isVertical = (p: { width: number; height: number }) => p.height > p.width;
 
+/** Codecs an MP4 carries as they are and every platform decodes (a camera's ProRes or PCM aren't). */
+const MP4_VIDEO = /^(h264|hevc|vp9|av1)$/;
+const MP4_AUDIO = /^(aac|mp3|opus|ac3|eac3)$/;
+
 /**
  * Make the file a destination accepts. Copies the streams when the source already fits
  * (no quality loss), otherwise re-encodes to H.264/AAC; for Instagram/TikTok a non-vertical
@@ -65,42 +69,46 @@ export async function prepare(tools: Tools, src: string, p: Probe, dest: Platfor
   const vertical = dest !== 'youtube' && settings.makeVertical && !isVertical(p);
   const tooBig = Math.max(p.width, p.height) > 1920 || p.fps > 60.5 || p.size > lim.maxBytes;
   const compatible = p.vcodec === 'h264' && (p.acodec === 'aac' || (p.acodec === null && dest === 'youtube')) && /mp4|mov/.test(p.format);
-  const args = ['-y', '-hide_banner', '-loglevel', 'error', '-progress', 'pipe:1', '-i', src];
-  if (dest === 'youtube' && !tooBig) {
-    // YouTube takes almost anything and re-encodes itself: send the original bytes.
-    args.push('-map', '0:v:0', '-map', '0:a:0?', '-c', 'copy', '-movflags', '+faststart', out);
-  } else if (compatible && !vertical && !tooBig) {
-    args.push('-map', '0:v:0', '-map', '0:a:0?', '-c', 'copy', '-movflags', '+faststart', out);
-  } else {
-    const silent = p.acodec === null;
-    if (silent) args.push('-f', 'lavfi', '-i', 'anullsrc=channel_layout=stereo:sample_rate=48000');
-    const fps = p.fps > 60.5 ? ',fps=60' : '';
-    if (vertical) {
-      args.push(
-        '-filter_complex',
-        `[0:v]split=2[bg][fg];[bg]scale=1080:1920:force_original_aspect_ratio=increase,crop=1080:1920,boxblur=24:2,eq=brightness=-0.08[b];` +
-          `[fg]scale=1080:1920:force_original_aspect_ratio=decrease[f];[b][f]overlay=(W-w)/2:(H-h)/2,setsar=1,format=yuv420p${fps}[v]`,
-        '-map',
-        '[v]',
-      );
-    } else {
-      const fit = Math.max(p.width, p.height) > 1920 ? (isVertical(p) ? 'scale=-2:1920,' : 'scale=1920:-2,') : '';
-      args.push('-vf', `${fit}setsar=1,format=yuv420p${fps}`, '-map', '0:v:0');
-    }
-    args.push('-map', silent ? '1:a:0' : '0:a:0');
-    args.push('-c:v', 'libx264', '-preset', 'medium', '-crf', '20', '-profile:v', 'high', '-maxrate', '25M', '-bufsize', '50M');
-    args.push('-c:a', 'aac', '-b:a', '160k', '-ar', '48000', '-ac', '2');
-    if (silent) args.push('-shortest');
-    args.push('-movflags', '+faststart', out);
-  }
+  const base = ['-y', '-hide_banner', '-loglevel', 'error', '-progress', 'pipe:1', '-i', src];
   const total = p.duration * 1e6;
-  const r = await run(tools.ffmpeg, args, {
-    timeoutMs: Math.max(10 * 60_000, p.duration * 8_000),
-    onLine: (l) => {
-      const m = l.match(/^out_time_us=(\d+)/);
-      if (m && total) onProgress?.(Math.min(99, Math.round((Number(m[1]) / total) * 100)));
-    },
-  });
+  const ffmpeg = (args: string[]) =>
+    run(tools.ffmpeg, args, {
+      timeoutMs: Math.max(10 * 60_000, p.duration * 8_000),
+      onLine: (l) => {
+        const m = l.match(/^out_time_us=(\d+)/);
+        if (m && total) onProgress?.(Math.min(99, Math.round((Number(m[1]) / total) * 100)));
+      },
+    });
+  // YouTube re-encodes everything itself, so it gets the original picture (and sound, when an MP4
+  // can carry it as it is); the others do too when the source already fits.
+  if (!tooBig && (dest === 'youtube' ? MP4_VIDEO.test(p.vcodec) : compatible && !vertical)) {
+    const audio = p.acodec === null || MP4_AUDIO.test(p.acodec) ? ['-c:a', 'copy'] : ['-c:a', 'aac', '-b:a', '192k', '-ar', '48000'];
+    const r = await ffmpeg([...base, '-map', '0:v:0', '-map', '0:a:0?', '-c:v', 'copy', ...audio, '-movflags', '+faststart', out]);
+    if (r.code === 0 && existsSync(out)) return out;
+    // Something in the source an MP4 can't hold as it is: fall through and re-encode it all.
+  }
+  const args = [...base];
+  const silent = p.acodec === null;
+  if (silent) args.push('-f', 'lavfi', '-i', 'anullsrc=channel_layout=stereo:sample_rate=48000');
+  const fps = p.fps > 60.5 ? ',fps=60' : '';
+  if (vertical) {
+    args.push(
+      '-filter_complex',
+      `[0:v]split=2[bg][fg];[bg]scale=1080:1920:force_original_aspect_ratio=increase,crop=1080:1920,boxblur=24:2,eq=brightness=-0.08[b];` +
+        `[fg]scale=1080:1920:force_original_aspect_ratio=decrease[f];[b][f]overlay=(W-w)/2:(H-h)/2,setsar=1,format=yuv420p${fps}[v]`,
+      '-map',
+      '[v]',
+    );
+  } else {
+    const fit = Math.max(p.width, p.height) > 1920 ? (isVertical(p) ? 'scale=-2:1920,' : 'scale=1920:-2,') : '';
+    args.push('-vf', `${fit}setsar=1,format=yuv420p${fps}`, '-map', '0:v:0');
+  }
+  args.push('-map', silent ? '1:a:0' : '0:a:0');
+  args.push('-c:v', 'libx264', '-preset', 'medium', '-crf', '20', '-profile:v', 'high', '-maxrate', '25M', '-bufsize', '50M');
+  args.push('-c:a', 'aac', '-b:a', '160k', '-ar', '48000', '-ac', '2');
+  if (silent) args.push('-shortest');
+  args.push('-movflags', '+faststart', out);
+  const r = await ffmpeg(args);
   if (r.code !== 0 || !existsSync(out)) throw new Error(`ffmpeg failed: ${lastLines(r.stderr)}`);
   return out;
 }
@@ -226,7 +234,8 @@ export async function download(tools: Tools, url: string, direct: boolean, dir: 
       if (m) onProgress?.(Math.round(Number(m[1])));
     },
   });
-  const file = readdirSync(dir).find((f) => f.startsWith('source.') && !f.endsWith('.part') && !f.endsWith('.ytdl'));
+  // Only the finished file: not yt-dlp's partial or per-stream files (source.f137.mp4, source.temp.mp4).
+  const file = readdirSync(dir).find((f) => /^source\.(mp4|mkv|webm|mov|m4v)$/i.test(f));
   if (r.code !== 0 || !file) {
     const why = lastLines(r.stderr || r.stdout, 3);
     if (/Sign in to confirm|not a bot|cookies/i.test(why)) throw new Error(`YouTube asked for a sign-in before downloading. In Settings, pick the browser you're signed in to YouTube with. (${why})`);

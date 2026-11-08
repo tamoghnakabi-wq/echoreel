@@ -1,7 +1,7 @@
 {
   "name": "echoreel",
   "productName": "Echoreel",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Post a video once — Echoreel relays it to YouTube, Instagram and TikTok.",
   "author": "Tamoghna Kabi",
   "license": "MIT",

@@ -156,14 +156,22 @@ export function startMock({ dir, ffmpeg = 'ffmpeg', ffprobe = ffmpeg.replace(/ff
         m = path.match(/^\/youtube\/upload-session\/(\w+)$/);
         if (m && req.method === 'PUT') {
           const sess = S.yt.sessions[m[1]];
+          if (!sess) return json(res, 404, { error: { message: 'session not found' } });
           const buf = await readBody(req);
+          // "bytes */size" asks how far an upload got: finished (200, the video again) or not (308).
+          if (/^bytes \*\//.test(req.headers['content-range'] ?? '')) {
+            if (sess.result) return json(res, 200, sess.result);
+            res.writeHead(308);
+            return res.end();
+          }
           if (fault('youtube-put')) return json(res, 503, { error: { message: 'backendError' } });
           if (buf.length !== sess.size) return json(res, 400, { error: { message: `expected ${sess.size} bytes, got ${buf.length}` } });
           const vid = id('ytup');
           writeFileSync(fileFor('youtube', vid), buf);
           const dur = Math.round(Number(execFileSync(ffprobe, ['-v', 'error', '-show_entries', 'format=duration', '-of', 'csv=p=0', fileFor('youtube', vid)]).toString()));
           S.yt.videos.unshift({ id: vid, title: sess.meta.snippet.title, description: sess.meta.snippet.description, publishedAt: new Date().toISOString(), duration: dur, privacy: sess.meta.status.privacyStatus, viaApi: true });
-          return json(res, 200, { id: vid, snippet: sess.meta.snippet, status: { privacyStatus: sess.meta.status.privacyStatus, uploadStatus: 'uploaded' } });
+          sess.result = { id: vid, snippet: sess.meta.snippet, status: { privacyStatus: sess.meta.status.privacyStatus, uploadStatus: 'uploaded' } };
+          return json(res, 200, sess.result);
         }
       }
 
