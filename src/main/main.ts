@@ -209,7 +209,7 @@ function createWindow() {
     minHeight: 640,
     show: false,
     title: 'Echoreel',
-    backgroundColor: '#0b0b10',
+    backgroundColor: '#1b1f1d',
     titleBarStyle: process.platform === 'darwin' ? 'hiddenInset' : 'default',
     autoHideMenuBar: true,
     icon: iconPath('icon.png'),
@@ -398,10 +398,16 @@ async function screenshots(dir: string) {
   win!.showInactive();
   await wait(2500);
   for (const spec of (process.env.ECHOREEL_SHOT_PAGES ?? 'activity,post,connections,rules,settings').split(',')) {
-    const [page, jobId] = spec.split('@');
+    // "page@jobId" opens a job; "page~600" scrolls the page down 600 px.
+    const [target, scroll] = spec.split('~');
+    const [page, jobId] = target.split('@');
     win!.webContents.send('navigate', { page, jobId });
     await wait(1200);
-    writeFileSync(join(dir, `${spec.replace('@', '-')}.png`), (await win!.webContents.capturePage()).toPNG());
+    if (scroll) {
+      await win!.webContents.executeJavaScript(`document.querySelector('main').scrollTop = ${Number(scroll)}`);
+      await wait(300);
+    }
+    writeFileSync(join(dir, `${spec.replace(/[@~]/g, '-')}.png`), (await win!.webContents.capturePage()).toPNG());
   }
   quitting = true;
   app.exit(0);

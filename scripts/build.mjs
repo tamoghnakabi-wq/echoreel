@@ -15,4 +15,5 @@ await build({ ...node, entryPoints: ['src/core/index.ts'], outfile: 'dist/core.j
 await build({ ...common, platform: 'browser', target: 'chrome130', format: 'iife', entryPoints: ['src/renderer/app.ts'], outfile: 'dist/renderer/app.js' });
 for (const f of ['index.html', 'styles.css']) cpSync(`src/renderer/${f}`, `dist/renderer/${f}`);
 cpSync('build/icon.png', 'dist/renderer/icon.png');
+cpSync('src/renderer/fonts', 'dist/renderer/fonts', { recursive: true });
 console.log('built dist/');

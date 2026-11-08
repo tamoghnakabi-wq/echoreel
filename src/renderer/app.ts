@@ -57,22 +57,34 @@ const I = {
   activity: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h4l3-8 4 16 3-8h4"/></svg>',
   post: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4M6 10l6-6 6 6"/><path d="M4 16v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3"/></svg>',
   link: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 14a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-1 1"/><path d="M14 10a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7l1-1"/></svg>',
-  rules: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg>',
-  settings: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>',
+  rules: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5" fill="currentColor"/></svg>',
+  settings: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h9M17 6h3M4 12h3M11 12h9M4 18h11M19 18h1"/><circle cx="15" cy="6" r="2"/><circle cx="9" cy="12" r="2"/><circle cx="17" cy="18" r="2"/></svg>',
   video: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="13" height="14" rx="2"/><path d="M16 10l5-3v10l-5-3"/></svg>',
+  computer: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/></svg>',
   refresh: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-3-6.7L21 8"/><path d="M21 3v5h-5"/></svg>',
   copy: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>',
   ext: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg>',
   check: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg>',
-  youtube: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M10 8.5v7l6-3.5z"/></svg>',
+  youtube: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M9.5 7.8v8.4l7-4.2z"/></svg>',
   instagram: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="4" y="4" width="16" height="16" rx="5"/><circle cx="12" cy="12" r="3.6"/><circle cx="17" cy="7" r="0.6" fill="currentColor"/></svg>',
   tiktok: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M14.5 3h2.6c.3 2 1.6 3.4 3.4 3.7v2.7c-1.3 0-2.5-.4-3.5-1v6.3a5.4 5.4 0 1 1-5.4-5.4c.3 0 .6 0 .9.1v2.8a2.6 2.6 0 1 0 2 2.5z"/></svg>',
 };
+// Echoreel's mark: a video frame with two fading echoes behind it.
+const LOGO = `<svg viewBox="0 0 32 32" aria-hidden="true"><rect x="2.8" y="7.8" width="11" height="17.4" rx="2.6" fill="none" stroke="#ffb224" stroke-opacity=".28" stroke-width="1.6"/><rect x="7.8" y="6" width="12.4" height="21" rx="3" fill="none" stroke="#ffb224" stroke-opacity=".6" stroke-width="1.6"/><rect x="13.6" y="3.5" width="15.4" height="26" rx="3.6" fill="#ffb224"/><path d="M19 12.2v8.6l6.6-4.3z" fill="#2b1d00"/></svg>`;
 const pf = (p: Platform, sm = false) => `<span class="pf ${p}${sm ? ' sm' : ''}">${I[p]}</span>`;
 // Remote images (avatars, thumbnails) that failed to load. Remembered so re-renders show the fallback right away.
 const badImg = new Set<string>();
 let pendingImgRender = false;
 const okImg = (u: any): u is string => typeof u === 'string' && /^https:/.test(u) && !badImg.has(u);
+function short(t?: number) {
+  if (!t) return 'never';
+  const s = Math.round((Date.now() - t) / 1000);
+  if (s < 45) return 'now';
+  if (s < 3600) return `${Math.round(s / 60)} min`;
+  if (s < 86400) return `${Math.round(s / 3600)} h`;
+  return new Date(t).toLocaleDateString(undefined, { day: 'numeric', month: 'short' });
+}
+const list = (xs: string[]) => (xs.length < 2 ? xs.join('') : `${xs.slice(0, -1).join(', ')} and ${xs.at(-1)}`);
 
 // ---------- data ----------
 let refreshing = false;
@@ -111,7 +123,6 @@ function renderSide() {
   const n = needsYou().length;
   const accounts = PLATFORMS.filter(connected);
   const s = V.settings;
-  const last = Math.max(0, ...accounts.map((p) => V.accounts[p].lastCheckAt ?? 0));
   const busy = V.progress || V.checking.length;
   const navs: [string, string, string][] = [
     ['activity', 'Activity', I.activity],
@@ -120,30 +131,33 @@ function renderSide() {
     ['rules', 'Rules', I.rules],
     ['settings', 'Settings', I.settings],
   ];
+  const inputs = `<div class="inputs">${PLATFORMS.map((p) => {
+    const a = V.accounts[p];
+    const st = !a ? 'off' : a.status === 'ok' && !a.lastCheckError ? 'ok' : 'bad';
+    const when = !a ? 'off' : a.status !== 'ok' ? 'reconnect' : short(a.lastCheckAt);
+    return `<div class="in ${st}" title="${NAMES[p]}: ${!a ? 'not connected' : a.status !== 'ok' ? 'needs reconnecting' : `checked ${ago(a.lastCheckAt)}`}"><i class="lamp"></i>${pf(p, true)}<span>${NAMES[p]}</span><time>${when}</time></div>`;
+  }).join('')}</div>`;
+  let watch: string;
+  if (s.paused) watch = `<div class="hd"><i class="lamp warn"></i>Paused</div><p>Nothing is checked or posted.</p>${inputs}<div class="acts"><button class="btn small" data-act="pause" data-on="0">Resume</button></div>`;
+  else if (!accounts.length) watch = `<div class="hd"><i class="lamp"></i>Not watching yet</div><p>Connect an account to start.</p>${inputs}<div class="acts"><button class="btn small" data-act="nav" data-page="connections">Connect</button></div>`;
+  else
+    watch = `<div class="hd"><i class="lamp ${busy ? 'busy' : 'good'}"></i>${busy ? (V.progress ? 'Relaying…' : 'Checking…') : `Watching ${accounts.length} account${accounts.length > 1 ? 's' : ''}`}</div>
+      <p>Checks every ${s.pollMinutes} min</p>${inputs}
+      <div class="acts"><button class="btn small" data-act="check">${I.refresh}Check now</button><button class="btn small ghost" data-act="pause" data-on="1">Pause</button></div>`;
+  const u = V.app.update;
+  const upd =
+    u?.status === 'ready' && !u.blocked
+      ? `<div class="watch upd"><div class="hd"><i class="lamp warn"></i>Update ready</div><p>Echoreel ${esc(u.version)} installs itself when you close this window.</p><div class="acts"><button class="btn small primary" data-act="updateInstall">Restart now</button></div></div>`
+      : u?.status === 'installing'
+        ? `<div class="watch upd"><div class="hd"><i class="lamp busy"></i>Updating…</div><p>Echoreel ${esc(u.version)} opens in a moment${V.progress ? ', after the current upload' : ''}.</p></div>`
+        : '';
   $('#side').innerHTML = `
-    <div class="brand"><img src="icon.png" alt="">Echoreel</div>
+    <div class="brand">${LOGO}Echoreel</div>
     <nav class="nav">${navs
-      .map(([id, label, icon]) => `<button data-act="nav" data-page="${id}" class="${page === id ? 'on' : ''}">${icon}<span>${label}</span>${id === 'activity' && n ? `<span class="badge">${n}</span>` : ''}</button>`)
+      .map(([id, label, icon]) => `<button data-act="nav" data-page="${id}" class="${page === id ? 'on' : ''}"><i class="led"></i>${icon}<span>${label}</span>${id === 'activity' && n ? `<span class="badge">${n}</span>` : ''}</button>`)
       .join('')}</nav>
     <div class="spacer"></div>
-    ${
-      V.app.update?.status === 'ready' && !V.app.update.blocked
-        ? `<div class="watch upd"><div class="row"><span class="dot"></span>Update ready</div><p>Version ${esc(V.app.update.version)} installs itself when you close this window.</p><button class="btn small primary" data-act="updateInstall">Restart now</button></div>`
-        : V.app.update?.status === 'installing'
-          ? `<div class="watch upd"><div class="row"><span class="dot busy"></span>Updating…</div><p>Echoreel ${esc(V.app.update.version)} opens in a moment${V.progress ? ', after the current upload' : ''}.</p></div>`
-          : ''
-    }
-    <div class="watch">
-      ${
-        s.paused
-          ? `<div class="row"><span class="dot off"></span>Paused</div><p>Nothing is checked or posted.</p><button class="btn small" data-act="pause" data-on="0">Resume</button>`
-          : !accounts.length
-            ? `<div class="row"><span class="dot off"></span>Not watching yet</div><p>Connect an account to start.</p><button class="btn small" data-act="nav" data-page="connections">Connect</button>`
-            : `<div class="row"><span class="dot ${busy ? 'busy' : ''}"></span>${busy ? (V.progress ? 'Relaying…' : 'Checking…') : `Watching ${accounts.length} account${accounts.length > 1 ? 's' : ''}`}</div>
-               <p>Every ${s.pollMinutes} min · last ${ago(last)}</p>
-               <div class="row"><button class="btn small" data-act="check">${I.refresh}Check now</button><button class="btn small ghost" data-act="pause" data-on="1">Pause</button></div>`
-      }
-    </div>`;
+    ${upd}<div class="watch">${watch}</div>`;
 }
 
 // ---------- pages ----------
@@ -159,25 +173,34 @@ function renderPage() {
 function head(title: string, sub: string, actions = '') {
   return `<div class="head"><div><h1>${title}</h1><p class="sub">${sub}</p></div><div class="row">${actions}</div></div>`;
 }
+const sec = (title: string, n?: number, tone = '') => `<h2>${title}${n ? `<span class="n ${tone}">${n}</span>` : ''}</h2>`;
 
 function activity() {
   const accounts = PLATFORMS.filter(connected);
   if (!accounts.length)
-    return `<div class="hero"><div class="rings"><span></span><span></span><span></span></div>
-      <h1>Post once.<br><em>Echo everywhere.</em></h1>
-      <p>Echoreel watches your YouTube, Instagram and TikTok. When you upload a video to one, it posts it to the others, in the right format, with your caption.</p>
-      <button class="btn primary" data-act="nav" data-page="connections">${I.link} Connect your accounts</button>
-      <div class="steps"><div><b>1 · Connect</b>Link the accounts you post to. Echoreel only reads your own videos.</div><div><b>2 · Choose rules</b>Pick what goes where. Shorts only, ask first, and more.</div><div><b>3 · Post as usual</b>Upload anywhere. Echoreel does the rest in the background.</div></div></div>`;
+    return `<div class="hero">
+      <h1 class="echo">Post once.<span class="e1" aria-hidden="true">Post once.</span><span class="e2" aria-hidden="true">Post once.</span></h1>
+      <p class="lede">Echoreel watches your YouTube, Instagram and TikTok. When you upload a video to one, it posts it to the others, in the right shape, with your caption.</p>
+      <button class="btn primary" data-act="nav" data-page="connections">${I.link}Connect your accounts</button>
+      <div class="steps">
+        <div><b><i>1</i>Connect</b>Link the accounts you post to. Echoreel only reads your own videos.</div>
+        <div><b><i>2</i>Set the routes</b>Pick what goes where: Shorts only, ask first, and more.</div>
+        <div><b><i>3</i>Post as usual</b>Upload anywhere. Echoreel copies it in the background.</div>
+      </div></div>`;
   const jobs = V.jobs as any[];
   const attention = needsYou();
   const others = jobs.filter((j) => !attention.includes(j));
   const p = V.progress;
-  return `${head('Activity', `Watching ${accounts.map((x) => NAMES[x]).join(', ')} for new videos.`, `<button class="btn" data-act="nav" data-page="post">${I.post}Post a video</button>`)}
-    ${p ? `<div class="progress"><div class="spin"></div><div class="grow"><b>${esc(p.label)}</b> <span class="muted">· ${esc(jobs.find((j) => j.id === p.jobId)?.title ?? '')}</span><div class="bar ${p.pct == null ? 'indef' : ''}"><i style="width:${p.pct ?? 30}%"></i></div></div></div>` : ''}
-    ${attention.length ? `<h2>Needs you</h2>${attention.map((j) => jobCard(j, true)).join('')}` : ''}
-    <h2>Relays</h2>
-    ${others.length ? others.map((j) => jobCard(j, openJobs.has(j.id))).join('') : `<div class="card empty">${I.video}<p>No relays yet. Upload a video to one of your accounts, or post one from here.</p></div>`}
-    <h2>Videos seen on your accounts</h2>
+  return `${head('Activity', `Watching ${list(accounts.map((x) => NAMES[x]))} for new videos.`, `<button class="btn" data-act="nav" data-page="post">${I.post}Post a video</button>`)}
+    ${
+      p
+        ? `<div class="onair"><span class="tag"><i class="lamp"></i>Relaying</span><div class="grow"><div class="ellipsis"><b>${esc(p.label)}</b> <span class="muted">${esc(jobs.find((j) => j.id === p.jobId)?.title ?? '')}</span></div><div class="bar ${p.pct == null ? 'indef' : ''}"><i style="width:${p.pct ?? 30}%"></i></div></div></div>`
+        : ''
+    }
+    ${attention.length ? `${sec('Needs you', attention.length, 'warn')}${attention.map((j) => `<div class="card job attention">${jobRow(j, true, openJobs.has(j.id))}</div>`).join('')}` : ''}
+    ${sec('Relays', others.length)}
+    ${others.length ? `<div class="card rundown">${others.map((j) => `<div class="job ${j.status === 'running' ? 'live' : ''}">${jobRow(j, openJobs.has(j.id))}</div>`).join('')}</div>` : `<div class="card empty">${I.video}<p>No relays yet. Upload a video to one of your accounts, or post one from here.</p></div>`}
+    ${sec('Videos seen on your accounts')}
     ${seenTable()}`;
 }
 
@@ -211,56 +234,56 @@ function targetLabel(t: any) {
   }
 }
 
-function jobCard(j: any, expanded: boolean) {
-  const [label, tone] = j.status === 'waiting' && j.notBefore > Date.now() ? [`Starting ${until(j.notBefore)}`, 'info'] : (JOB_STATUS[j.status] ?? [j.status, '']);
-  const from = j.sourcePlatform ? `From ${NAMES[j.sourcePlatform as Platform]}` : 'Posted from this computer';
+function jobRow(j: any, expanded: boolean, showLog = true) {
+  const handsOn = j.status !== 'approval' && j.targets.some((t: any) => t.status === 'action');
+  const [label, tone] = handsOn ? ['Your turn', 'warn'] : j.status === 'waiting' && j.notBefore > Date.now() ? [`Starting ${until(j.notBefore)}`, 'info'] : (JOB_STATUS[j.status] ?? [j.status, '']);
+  const src = j.sourcePlatform as Platform | undefined;
   const reason = j.status === 'cancelled' ? j.log.at(-1)?.msg : '';
-  const thumb = okImg(j.thumbnail) ? `<img class="thumb" src="${esc(j.thumbnail)}" alt="">` : `<div class="thumb">${j.sourcePlatform ? I[j.sourcePlatform as Platform] : I.video}</div>`;
-  const attention = j.status === 'approval' || j.targets.some((t: any) => t.status === 'action');
-  return `<div class="job ${attention ? 'attention' : ''}">
-    <div class="top" data-act="toggle" data-id="${j.id}">
-      ${thumb}
+  const shot = okImg(j.thumbnail) ? `<img src="${esc(j.thumbnail)}" alt="">` : src ? pf(src, true) : I.video;
+  const length = j.duration ? `<span class="tc">${dur(j.duration).replace(' s', 's')}</span>` : '';
+  return `<div class="top" data-act="toggle" data-id="${j.id}">
+      <div class="mon ${okImg(j.thumbnail) ? '' : (src ?? '')}">${shot}${length}</div>
       <div class="grow">
         <div class="row"><span class="title ellipsis grow">${esc(j.title || 'Untitled video')}</span><span class="pill ${tone}">${label}</span></div>
-        <div class="small muted">${from} · ${ago(j.createdAt)}${j.duration ? ` · ${dur(j.duration)}` : ''}${reason ? ` · ${esc(reason)}` : ''}</div>
-        <div class="targets">${j.targets
+        <div class="meta"><span>${ago(j.createdAt)}</span>${reason ? `<span class="why">${esc(reason)}</span>` : ''}</div>
+        <div class="route"><span class="src">${src ? `${pf(src, true)}${NAMES[src]}` : `${I.computer}This computer`}</span><span class="wire"></span>${j.targets
           .map(
             (t: any) =>
-              `<span class="target ${t.status}">${pf(t.platform, true)}${NAMES[t.platform as Platform]} <span class="st">${targetLabel(t)}</span>${t.resultUrl ? `<a href="${esc(t.resultUrl)}" target="_blank" title="Open">${I.ext.replace('<svg', '<svg width="12" height="12"')}</a>` : ''}</span>`,
+              `<span class="target ${j.status === 'cancelled' && t.status === 'pending' ? 'skipped' : t.status}"><i class="lamp"></i>${pf(t.platform, true)}${NAMES[t.platform as Platform]}<span class="st">${j.status === 'cancelled' && t.status === 'pending' ? 'not sent' : targetLabel(t)}</span>${t.resultUrl ? `<a href="${esc(t.resultUrl)}" target="_blank" title="Open on ${NAMES[t.platform as Platform]}">${I.ext.replace('<svg', '<svg width="13" height="13"')}</a>` : ''}</span>`,
           )
           .join('')}</div>
       </div>
     </div>
-    ${expanded ? `<div class="more">${jobDetails(j)}</div>` : ''}
-  </div>`;
+    ${expanded ? `<div class="more">${jobDetails(j, showLog)}</div>` : ''}`;
 }
 
-function jobDetails(j: any) {
+function jobDetails(j: any, showLog = true) {
   let h = '';
   if (j.status === 'approval') {
-    h += `<div class="approve"><p class="muted small" style="margin-top:0">Check the captions, then relay. Nothing has been posted yet.</p>${j.targets
+    h += `<div class="approve"><p>Check the captions, then relay. Nothing has been posted yet.</p>${j.targets
       .filter((t: any) => t.status !== 'skipped')
       .map(
-        (t: any) => `<div class="card" style="padding:12px 14px">
-          <div class="row">${pf(t.platform, true)}<b>${NAMES[t.platform as Platform]}</b><label class="row right small muted">Post here <input type="checkbox" class="toggle" data-draft="skip:${j.id}:${t.platform}" ${draft(`skip:${j.id}:${t.platform}`, 'on') === 'on' ? 'checked' : ''}></label></div>
+        (t: any) => `<div class="ed">
+          <div class="hd">${pf(t.platform, true)}<b>${NAMES[t.platform as Platform]}</b><label class="right">Post here <input type="checkbox" class="toggle" data-draft="skip:${j.id}:${t.platform}" ${draft(`skip:${j.id}:${t.platform}`, 'on') === 'on' ? 'checked' : ''}></label></div>
           ${t.platform === 'youtube' ? `<label class="field"><span>Title</span><input type="text" maxlength="100" data-draft="title:${j.id}:${t.platform}" value="${esc(draft(`title:${j.id}:${t.platform}`, t.title))}"></label>` : ''}
           <label class="field"><span>${t.platform === 'youtube' ? 'Description' : 'Caption'}</span><textarea data-draft="caption:${j.id}:${t.platform}">${esc(draft(`caption:${j.id}:${t.platform}`, t.caption))}</textarea></label>
         </div>`,
       )
       .join('')}
-      <div class="row" style="margin-top:12px"><button class="btn primary" data-act="approve" data-id="${j.id}">${I.check}Relay now</button><button class="btn ghost" data-act="cancel" data-id="${j.id}">Don't relay</button></div></div>`;
+      <div class="acts"><button class="btn primary" data-act="approve" data-id="${j.id}">${I.check}Relay now</button><button class="btn ghost" data-act="cancel" data-id="${j.id}">Don't relay</button></div></div>`;
   }
   for (const t of j.targets.filter((x: any) => x.status === 'action')) {
     if (t.platform === 'youtube')
       h += `<div class="handoff">${pf('youtube')}<div class="grow"><p><b>Finish on YouTube.</b> The video is ready. Click below: Echoreel copies the title and description, shows the file, and opens YouTube's upload page. Drop the file in and paste.</p>
         <div class="row wrap"><button class="btn primary small" data-act="handoff" data-id="${j.id}" data-p="youtube">${I.ext}Upload to YouTube</button><button class="btn small" data-act="markDone" data-id="${j.id}" data-p="youtube">${I.check}I've posted it</button></div>
-        <p class="small faint" style="margin:8px 0 0">To have Echoreel post to YouTube by itself, see Rules → YouTube.</p></div></div>`;
+        <p class="small faint" style="margin:12px 0 0">To have Echoreel post to YouTube by itself, see Rules, then YouTube.</p></div></div>`;
     else
       h += `<div class="handoff">${pf('tiktok')}<div class="grow"><p><b>Finish on TikTok.</b> The video is in your TikTok inbox. Open TikTok on your phone, tap the notification, paste the caption and post. Echoreel notices once it's live.</p>
         <div class="row wrap"><button class="btn primary small" data-act="handoff" data-id="${j.id}" data-p="tiktok">${I.copy}Copy caption</button><button class="btn small" data-act="markDone" data-id="${j.id}" data-p="tiktok">${I.check}I've posted it</button></div></div></div>`;
   }
   const failed = j.targets.filter((t: any) => t.status === 'failed');
   for (const t of failed) h += `<div class="err">${NAMES[t.platform as Platform]}: ${esc(t.error)}</div>`;
+  if (!showLog) return h + `<div class="acts"><button class="btn small ghost" data-act="toggle" data-id="${j.id}">Show what happened</button></div>`;
   h += `<ul class="log">${j.log
     .slice()
     .reverse()
@@ -269,8 +292,8 @@ function jobDetails(j: any) {
   const btns: string[] = [];
   if (failed.length) btns.push(`<button class="btn small" data-act="retry" data-id="${j.id}">${I.refresh}Try again</button>`);
   if (['waiting', 'partial', 'failed'].includes(j.status) && j.targets.some((t: any) => t.status === 'pending')) btns.push(`<button class="btn small ghost danger" data-act="cancel" data-id="${j.id}">Cancel</button>`);
-  if (j.sourceUrl && j.sourcePlatform) btns.push(`<a class="btn small ghost" href="${esc(j.source.startsWith('youtube:') ? `https://www.youtube.com/watch?v=${j.source.slice(8)}` : j.sourceUrl)}" target="_blank">${I.ext}Original</a>`);
-  if (btns.length) h += `<div class="row" style="margin-top:10px">${btns.join('')}</div>`;
+  if (j.sourceUrl && j.sourcePlatform) btns.push(`<a class="btn small ghost" href="${esc(j.source.startsWith('youtube:') ? `https://www.youtube.com/watch?v=${j.source.slice(8)}` : j.sourceUrl)}" target="_blank">${I.ext}Open the original</a>`);
+  if (btns.length) h += `<div class="acts">${btns.join('')}</div>`;
   return h;
 }
 
@@ -285,15 +308,15 @@ const ITEM_STATUS: Record<string, [string, string]> = {
 };
 function seenTable() {
   const items = (V.items as any[]).filter((i) => i.platform);
-  if (!items.length) return `<div class="card empty"><p>Nothing yet. Echoreel lists every video it sees here.</p></div>`;
-  return `<div class="card" style="padding:4px 10px"><table class="seen">${items
+  if (!items.length) return `<div class="card empty">${I.video}<p>Nothing yet. Every video Echoreel finds on your accounts shows up here.</p></div>`;
+  return `<div class="card rundown"><table class="seen">${items
     .slice(0, 40)
     .map((i) => {
       const [label, tone] = ITEM_STATUS[i.status] ?? [i.status, ''];
       const canRelay = ['baseline', 'skipped', 'duplicate', 'ignored'].includes(i.status);
-      return `<tr><td style="width:28px">${pf(i.platform, true)}</td><td class="grow"><a href="${esc(i.url)}" target="_blank" class="ellipsis" style="color:var(--text);display:block;max-width:420px">${esc(i.title || 'Untitled')}</a>${i.reason ? `<div class="small faint">${esc(i.reason)}</div>` : ''}</td>
-        <td><span class="pill ${tone}">${label}</span></td><td class="small faint" style="white-space:nowrap">${ago(i.createdAt)}</td>
-        <td style="text-align:right">${canRelay ? `<button class="btn small ghost" data-act="relayItem" data-key="${esc(i.key)}">Relay anyway</button>` : ''}</td></tr>`;
+      return `<tr><td>${pf(i.platform, true)}</td><td><a href="${esc(i.url)}" target="_blank" class="t ellipsis">${esc(i.title || 'Untitled')}</a>${i.reason ? `<div class="small faint">${esc(i.reason)}</div>` : ''}</td>
+        <td><span class="pill ${tone}">${label}</span></td><td class="when">${ago(i.createdAt)}</td>
+        <td>${canRelay ? `<button class="btn small" data-act="relayItem" data-key="${esc(i.key)}">Relay anyway</button>` : ''}</td></tr>`;
     })
     .join('')}</table></div>`;
 }
@@ -302,7 +325,7 @@ function seenTable() {
 function postPage() {
   const sub = 'Pick a video on this computer and send it to every connected account at once.';
   if (!post.file)
-    return `${head('Post a video', sub)}<div class="drop" data-act="choose" id="drop">${I.post}<h3>Drop a video here</h3><p class="muted">or click to choose · MP4, MOV, WebM</p></div>
+    return `${head('Post a video', sub)}<div class="drop" data-act="choose" id="drop" role="button" tabindex="0"><div class="frame">${I.post}</div><h3>Drop a video here</h3><p>or click to choose a file. MP4, MOV or WebM.</p></div>
       <div class="note" style="margin-top:16px"><b>Tip:</b> vertical videos (9:16) up to 3 minutes work best everywhere. They become a YouTube Short, a Reel and a TikTok.</div>`;
   const i = post.info;
   const name = post.file.split(/[\\/]/).pop()!;
@@ -310,22 +333,31 @@ function postPage() {
   const caption = draft('post:caption', '');
   const vertical = i && i.height > i.width;
   return `${head('Post a video', sub)}
-    <div class="card"><div class="row"><div class="thumb">${I.video}</div><div class="grow"><b class="ellipsis" style="display:block">${esc(name)}</b>
-      <div class="small muted">${i ? `${i.width}×${i.height} · ${dur(i.duration)} · ${mb(i.size)} · ${vertical ? 'vertical' : 'landscape'}` : 'Reading…'}</div></div>
-      <button class="btn small ghost" data-act="clearPost">Change</button></div>
-      ${i && !vertical && V.settings.makeVertical ? `<div class="note">This video is landscape. For Instagram and TikTok, Echoreel fits it into a 9:16 frame over a blurred copy of itself (you can turn that off in Rules).</div>` : ''}
-    </div>
-    <div class="card"><label class="field" style="margin-top:0"><span>Title <span class="faint">(YouTube)</span></span><input type="text" maxlength="100" data-draft="post:title" value="${esc(title)}"><div class="count">${title.length}/100</div></label>
-      <label class="field"><span>Caption <span class="faint">(Instagram, TikTok, YouTube description)</span></span><textarea rows="5" data-draft="post:caption" placeholder="Say something… #hashtags work everywhere">${esc(caption)}</textarea><div class="count"><span class="${caption.length > 2200 ? 'over' : ''}">${caption.length}/2200</span></div></label>
-      <span class="small muted" style="font-weight:600">Post to</span>
-      <div class="chips" style="margin-top:8px">${PLATFORMS.map((p) =>
-        connected(p)
-          ? `<label class="choice ${post.platforms.has(p) ? 'on' : ''}" data-act="postPlatform" data-p="${p}">${pf(p, true)}${NAMES[p]}</label>`
-          : `<span class="choice disabled" title="Not connected">${pf(p, true)}${NAMES[p]} <a href="#" data-act="nav" data-page="connections" class="small">connect</a></span>`,
-      ).join('')}</div>
-      ${post.platforms.has('youtube') && connected('youtube') && V.settings.youtubeMode === 'assisted' ? `<div class="note">YouTube: Echoreel prepares the upload and you finish it in YouTube Studio with one click.</div>` : ''}
-      ${post.platforms.has('tiktok') && connected('tiktok') && V.settings.tiktokMode === 'inbox' ? `<div class="note">TikTok: the video lands in your TikTok inbox. Tap the notification in the app to post it.</div>` : ''}
-      <div class="row" style="margin-top:16px"><button class="btn primary" data-act="submitPost" ${post.busy || !i ? 'disabled' : ''}>${I.post}Post everywhere</button></div>
+    <div class="postgrid">
+      <div class="monitor">
+        <div class="screen ${i && !vertical ? 'landscape' : ''}">${I.video}${i ? `<span class="tc">${dur(i.duration).replace(' s', 's')}</span>` : ''}</div>
+        <dl class="specs">${
+          i
+            ? `<div><dt>Size</dt><dd>${i.width}×${i.height}</dd></div><div><dt>Length</dt><dd>${dur(i.duration)}</dd></div><div><dt>File</dt><dd>${mb(i.size)}</dd></div><div><dt>Shape</dt><dd>${vertical ? 'Vertical' : 'Landscape'}</dd></div>`
+            : '<div><dt>Reading the file…</dt></div>'
+        }</dl>
+        <button class="btn small" data-act="clearPost">Choose another</button>
+      </div>
+      <div class="card">
+        <span class="filename ellipsis">${esc(name)}</span>
+        ${i && !vertical && V.settings.makeVertical ? `<div class="note">This video is landscape. For Instagram and TikTok, Echoreel fits it into a 9:16 frame over a blurred copy of itself (you can turn that off in Rules).</div>` : ''}
+        <label class="field"><span>Title <span class="faint">for YouTube</span></span><input type="text" maxlength="100" data-draft="post:title" value="${esc(title)}"><div class="count">${title.length}/100</div></label>
+        <label class="field" style="margin-top:6px"><span>Caption <span class="faint">for Instagram, TikTok and the YouTube description</span></span><textarea rows="5" data-draft="post:caption" placeholder="Say something… #hashtags work everywhere">${esc(caption)}</textarea><div class="count"><span class="${caption.length > 2200 ? 'over' : ''}">${caption.length}/2200</span></div></label>
+        <span class="label">Post to</span>
+        <div class="chips">${PLATFORMS.map((p) =>
+          connected(p)
+            ? `<label class="choice ${post.platforms.has(p) ? 'on' : ''}" data-act="postPlatform" data-p="${p}">${pf(p, true)}${NAMES[p]}</label>`
+            : `<span class="choice disabled" title="Not connected">${pf(p, true)}${NAMES[p]} <a href="#" data-act="nav" data-page="connections" class="small">Connect</a></span>`,
+        ).join('')}</div>
+        ${post.platforms.has('youtube') && connected('youtube') && V.settings.youtubeMode === 'assisted' ? `<div class="note">YouTube: Echoreel prepares the upload and you finish it in YouTube Studio with one click.</div>` : ''}
+        ${post.platforms.has('tiktok') && connected('tiktok') && V.settings.tiktokMode === 'inbox' ? `<div class="note">TikTok: the video lands in your TikTok inbox. Tap the notification in the app to post it.</div>` : ''}
+        <div class="acts" style="margin-top:20px"><button class="btn primary" data-act="submitPost" ${post.busy || !i ? 'disabled' : ''}>${I.post}Post everywhere</button></div>
+      </div>
     </div>`;
 }
 
@@ -334,19 +366,19 @@ const GUIDES: Record<Platform, () => string> = {
   youtube: () => `<ol>
     <li>Open <a href="https://console.cloud.google.com/projectcreate" target="_blank">Google Cloud</a> and create a project (any name, e.g. <b>Echoreel</b>).</li>
     <li>Enable the <a href="https://console.cloud.google.com/apis/library/youtube.googleapis.com" target="_blank">YouTube Data API v3</a> for it.</li>
-    <li>Open <a href="https://console.cloud.google.com/auth/overview" target="_blank">Google Auth Platform</a> → <b>Get started</b>: choose <b>External</b>, add your email.</li>
-    <li>Under <b>Audience</b>, click <b>Publish app</b>. Unpublished apps sign you out every 7 days. Google shows an "unverified app" warning when you connect; that's expected for your own app (click <b>Advanced → Go to …</b>).</li>
-    <li>Under <b>Clients</b> → <b>Create client</b> → type <b>Desktop app</b>. Copy the client ID and secret below.</li></ol>`,
+    <li>Open <a href="https://console.cloud.google.com/auth/overview" target="_blank">Google Auth Platform</a>, click <b>Get started</b>, choose <b>External</b> and add your email.</li>
+    <li>Under <b>Audience</b>, click <b>Publish app</b>. Unpublished apps sign you out every 7 days. Google shows an "unverified app" warning when you connect; that's expected for your own app (click <b>Advanced</b>, then <b>Go to …</b>).</li>
+    <li>Under <b>Clients</b>, click <b>Create client</b> with type <b>Desktop app</b>. Copy the client ID and secret below.</li></ol>`,
   instagram: () => `<ol>
-    <li>Make your Instagram a <b>Creator</b> or <b>Business</b> account (Instagram app → Settings → Account type and tools). It's free.</li>
+    <li>Make your Instagram a <b>Creator</b> or <b>Business</b> account (Instagram app, Settings, Account type and tools). It's free.</li>
     <li>On <a href="https://developers.facebook.com/apps/creation/" target="_blank">Meta for Developers</a>, create an app. For the use case, pick <b>Manage messaging &amp; content on Instagram</b>.</li>
-    <li>In the app, open <b>Instagram → API setup with Instagram login</b>, then under <b>Generate access tokens</b> click <b>Add account</b> and sign in with your Instagram.</li>
-    <li>If Instagram asks, accept the tester invite (instagram.com → Settings → Apps and websites → Tester invites), then click <b>Generate token</b>.</li>
+    <li>In the app, open <b>Instagram</b>, then <b>API setup with Instagram login</b>. Under <b>Generate access tokens</b>, click <b>Add account</b> and sign in with your Instagram.</li>
+    <li>If Instagram asks, accept the tester invite (instagram.com, Settings, Apps and websites, Tester invites), then click <b>Generate token</b>.</li>
     <li>Paste the token below. It lasts 60 days and Echoreel renews it automatically.</li></ol>`,
   tiktok: () => `<ol>
     <li>On <a href="https://developers.tiktok.com/apps/" target="_blank">TikTok for Developers</a>, sign in and <b>Connect an app</b>.</li>
     <li>Add the products <b>Login Kit</b> and <b>Content Posting API</b>. Turn on the scopes <b>user.info.basic</b>, <b>video.list</b> and <b>video.upload</b>.</li>
-    <li>In Login Kit, choose platform <b>Desktop</b> and add this redirect URI:<div class="copyline"><code>${esc(V.app.redirects.tiktok)}</code><button class="btn small ghost" data-act="copy" data-text="${esc(V.app.redirects.tiktok)}">${I.copy}</button></div></li>
+    <li>In Login Kit, choose platform <b>Desktop</b> and add this redirect URI:<div class="copyline"><code>${esc(V.app.redirects.tiktok)}</code><button class="btn small ghost" data-act="copy" data-text="${esc(V.app.redirects.tiktok)}" title="Copy">${I.copy}</button></div></li>
     <li>Switch to <b>Sandbox</b>, create one, and add your TikTok account under <b>Target users</b>. A sandbox works for your own account without TikTok's review.</li>
     <li>Copy the <b>Client key</b> and <b>Client secret</b> (from the sandbox) below.</li></ol>`,
 };
@@ -354,7 +386,7 @@ const GUIDES: Record<Platform, () => string> = {
 function connections() {
   return `${head('Connections', 'Echoreel signs in with your own developer apps, so your accounts stay yours. Setup takes about 10 minutes per platform, once.')}
     <div class="grid3">${PLATFORMS.map(connCard).join('')}</div>
-    <div class="note" style="margin-top:16px"><b>Privacy:</b> sign-ins are stored encrypted on this computer${V.app.encrypted ? ' (system keychain)' : ''}. Echoreel only talks to YouTube, Instagram and TikTok. There's no Echoreel server.</div>`;
+    <div class="note" style="margin-top:18px"><b>Privacy:</b> sign-ins are stored encrypted on this computer${V.app.encrypted ? ' (system keychain)' : ''}. Echoreel only talks to YouTube, Instagram and TikTok. There's no Echoreel server.</div>`;
 }
 
 function connCard(p: Platform) {
@@ -363,17 +395,16 @@ function connCard(p: Platform) {
   const err = errors[p] ? `<div class="err">${esc(errors[p])}</div>` : '';
   let body: string;
   if (a) {
-    const warn = a.status === 'reconnect' ? `<div class="note" style="border-color:rgba(255,107,107,.4)"><b>Needs reconnecting.</b> ${esc(a.statusMessage ?? '')}</div>` : '';
+    const warn = a.status === 'reconnect' ? `<div class="err"><b>Needs reconnecting.</b> ${esc(a.statusMessage ?? '')}</div>` : '';
     const checkErr = a.lastCheckError && a.status === 'ok' ? `<div class="err">Last check failed: ${esc(a.lastCheckError)}</div>` : '';
-    const exp = a.tokenExpiresAt ? `<div class="small faint">Token renews automatically (valid until ${new Date(a.tokenExpiresAt).toLocaleDateString()})</div>` : '';
+    const exp = a.tokenExpiresAt ? `<div class="small faint exp">Token renews automatically (valid until ${new Date(a.tokenExpiresAt).toLocaleDateString()})</div>` : '';
     body = `<div class="who">${okImg(a.avatar) ? `<img src="${esc(a.avatar)}" alt="">` : pf(p)}<div class="grow"><b class="ellipsis" style="display:block">${esc(a.name)}</b><div class="small muted">Checked ${ago(a.lastCheckAt)}</div></div></div>
       ${warn}${checkErr}${exp}${err}
-      <div class="row wrap" style="margin-top:14px">
-        ${a.status === 'reconnect' || p === 'instagram' ? '' : `<button class="btn small" data-act="checkOne" data-p="${p}">${I.refresh}Check now</button>`}
-        ${p === 'instagram' ? `<button class="btn small" data-act="checkOne" data-p="${p}">${I.refresh}Check now</button>` : ''}
+      <div class="acts">
+        ${a.status === 'reconnect' ? '' : `<button class="btn small" data-act="checkOne" data-p="${p}">${I.refresh}Check now</button>`}
         ${p !== 'instagram' ? `<button class="btn small ${a.status === 'reconnect' ? 'primary' : ''}" data-act="connect" data-p="${p}" ${busy ? 'disabled' : ''}>${busy ? 'Waiting for browser…' : 'Reconnect'}</button>` : ''}
         <button class="btn small ghost danger" data-act="disconnect" data-p="${p}">Disconnect</button></div>
-      ${p === 'instagram' ? `<details class="guide" style="margin-top:12px"><summary>Use a new token</summary><div style="padding:0 14px 14px"><input type="password" placeholder="IGAA…" data-draft="ig:token" value="${esc(draft('ig:token'))}"><button class="btn small" style="margin-top:8px" data-act="connect" data-p="instagram">Update token</button></div></details>` : ''}`;
+      ${p === 'instagram' ? `<details class="guide" style="margin-top:14px"><summary>Use a new token</summary><div style="padding:0 14px 14px"><input type="password" placeholder="IGAA…" data-draft="ig:token" value="${esc(draft('ig:token'))}"><button class="btn small" style="margin-top:10px" data-act="connect" data-p="instagram">Update token</button></div></details>` : ''}`;
   } else {
     const fields =
       p === 'youtube'
@@ -383,12 +414,12 @@ function connCard(p: Platform) {
           ? `<label class="field"><span>Client key</span><input type="text" placeholder="sbaw…" data-draft="t:key" value="${esc(draft('t:key', V.credentials.tiktok?.clientKey ?? ''))}"></label>
              <label class="field"><span>Client secret</span><input type="password" placeholder="${V.credentials.tiktok?.hasSecret ? 'saved, leave empty to keep' : ''}" data-draft="t:secret" value="${esc(draft('t:secret'))}"></label>`
           : `<label class="field"><span>Access token</span><input type="password" placeholder="IGAA…" data-draft="ig:token" value="${esc(draft('ig:token'))}"></label>`;
-    body = `<p class="small muted" style="margin-top:0">${
+    body = `<p>${
       p === 'youtube' ? 'Reads your new uploads and prepares (or posts) Shorts.' : p === 'instagram' ? 'Reads your new reels and posts reels. Needs a Creator or Business account.' : 'Reads your new videos and sends videos to your TikTok inbox.'
     }</p>
       <details class="guide"><summary>How to set up (one time)</summary>${GUIDES[p]()}</details>
       ${fields}${err}
-      <button class="btn primary" style="margin-top:6px" data-act="connect" data-p="${p}" ${busy ? 'disabled' : ''}>${busy ? (p === 'instagram' ? 'Checking…' : 'Finish signing in in your browser…') : `Connect ${NAMES[p]}`}</button>`;
+      <div class="acts" style="margin-top:18px"><button class="btn primary" data-act="connect" data-p="${p}" ${busy ? 'disabled' : ''}>${busy ? (p === 'instagram' ? 'Checking…' : 'Finish signing in in your browser…') : `Connect ${NAMES[p]}`}</button></div>`;
   }
   const status = a ? (a.status === 'ok' ? `<span class="pill good">Connected</span>` : `<span class="pill bad">Reconnect</span>`) : `<span class="pill">Not connected</span>`;
   return `<div class="card conn"><div class="hd">${pf(p)}<b>${NAMES[p]}</b><span class="right">${status}</span></div>${body}</div>`;
@@ -399,16 +430,26 @@ function rules() {
   const s = V.settings;
   const sel = (key: string, opts: [string, string][]) => `<select data-set="${key}">${opts.map(([v, l]) => `<option value="${v}" ${String(s[key]) === v ? 'selected' : ''}>${l}</option>`).join('')}</select>`;
   const tog = (key: string) => `<input type="checkbox" class="toggle" data-set="${key}" ${s[key] ? 'checked' : ''}>`;
-  const radio = (key: string, v: string, t: string, d: string) => `<label class="${s[key] === v ? 'on' : ''}"><input type="radio" name="${key}" value="${v}" data-set="${key}" ${s[key] === v ? 'checked' : ''}><div class="t"><b>${t}</b></div><div class="d small muted">${d}</div></label>`;
-  return `${head('Rules', 'What gets relayed where, and how.')}
-    <div class="card"><table class="matrix"><tr><th>When you post on…</th>${PLATFORMS.map((p) => `<th>also post to ${NAMES[p]}</th>`).join('')}</tr>
-    ${PLATFORMS.map(
-      (from) => `<tr><td><div class="row">${pf(from, true)}<b>${NAMES[from]}</b>${connected(from) ? '' : '<span class="small faint">not connected</span>'}</div></td>${PLATFORMS.map((to) =>
-        from === to ? `<td class="self">·</td>` : `<td><input type="checkbox" class="toggle" data-route="${from}:${to}" ${s.routes[from][to] ? 'checked' : ''}></td>`,
-      ).join('')}</tr>`,
-    ).join('')}</table></div>
+  const radio = (key: string, v: string, t: string, d: string) => `<label class="${s[key] === v ? 'on' : ''}"><input type="radio" name="${key}" value="${v}" data-set="${key}" ${s[key] === v ? 'checked' : ''}><div class="t">${t}</div><div class="d">${d}</div></label>`;
+  const readout = PLATFORMS.map((from) => {
+    const to = PLATFORMS.filter((t) => t !== from && s.routes[from][t]).map((t) => NAMES[t]);
+    return `<div>${pf(from, true)}<span>New ${NAMES[from]} videos ${to.length ? `go to <b>${list(to)}</b>.` : `<b>stay on ${NAMES[from]}</b>.`}</span></div>`;
+  }).join('');
+  return `${head('Rules', 'What gets relayed where, and how. Light a key to send videos from that row to that column.')}
+    <div class="card xp"><table class="matrix">
+      <tr><th class="corner" rowspan="2">When you post on</th><th class="span" colspan="3">also post to</th></tr>
+      <tr>${PLATFORMS.map((p) => `<th><span class="dest">${pf(p, true)}${NAMES[p]}</span></th>`).join('')}</tr>
+      ${PLATFORMS.map(
+        (from) => `<tr><td class="src"><div class="row">${pf(from)}<div><b>${NAMES[from]}</b>${connected(from) ? '' : '<div class="small faint">not connected</div>'}</div></div></td>${PLATFORMS.map((to) =>
+          from === to
+            ? `<td><div class="blank" title="Same platform"></div></td>`
+            : `<td><label class="xpt" title="${NAMES[from]} to ${NAMES[to]}"><input type="checkbox" data-route="${from}:${to}" ${s.routes[from][to] ? 'checked' : ''} aria-label="Post ${NAMES[from]} videos to ${NAMES[to]}"><span class="key">${s.routes[from][to] ? `${I.check}On` : 'Off'}</span></label></td>`,
+        ).join('')}</tr>`,
+      ).join('')}
+    </table>
+    <div class="readout">${readout}</div></div>
 
-    <h2>Before posting</h2>
+    ${sec('Before posting')}
     <div class="card">
       <div class="opt"><div class="grow"><div class="t">Ask me first</div><div class="d">New videos wait in Activity until you check the captions and click Relay.</div></div><input type="checkbox" class="toggle" data-set="approval" ${s.approval === 'ask' ? 'checked' : ''}></div>
       <div class="opt"><div class="grow"><div class="t">Wait before relaying</div><div class="d">Gives you time to fix a typo or delete a post before it's copied. YouTube also needs a few minutes to finish HD processing.</div></div><select data-set="holdMinutes">${[0, 2, 5, 10, 30, 60].map((m) => `<option value="${m}" ${s.holdMinutes === m ? 'selected' : ''}>${m ? `${m} min` : 'No wait'}</option>`).join('')}</select></div>
@@ -416,19 +457,19 @@ function rules() {
       <div class="opt"><div class="grow"><div class="t">Fit landscape videos to 9:16</div><div class="d">For Instagram and TikTok, place a landscape video on a vertical frame over a blurred copy of itself.</div></div>${tog('makeVertical')}</div>
     </div>
 
-    <h2>YouTube</h2>
-    <div class="card"><div class="t" style="font-weight:650">How Echoreel posts to YouTube</div>
+    ${sec('YouTube')}
+    <div class="card"><div class="t">How Echoreel posts to YouTube</div>
       <div class="radio">${radio('youtubeMode', 'assisted', 'Prepare, I finish (recommended)', 'Echoreel gets the video ready, copies the title and description, and opens YouTube. You drop it in. About 20 seconds.')}
       ${radio('youtubeMode', 'api', 'Post automatically', 'Only works after Google approves your project in the <a href="https://support.google.com/youtube/contact/yt_api_form" target="_blank">YouTube API audit</a>. Before that, YouTube locks API uploads to private.')}</div>
-      <div class="opt" style="margin-top:12px"><div class="grow"><div class="t">Visibility for automatic posts</div></div>${sel('youtubePrivacy', [['public', 'Public'], ['unlisted', 'Unlisted'], ['private', 'Private']])}</div>
+      <div class="opt"><div class="grow"><div class="t">Visibility for automatic posts</div></div>${sel('youtubePrivacy', [['public', 'Public'], ['unlisted', 'Unlisted'], ['private', 'Private']])}</div>
       <div class="opt"><div class="grow"><div class="t">Add #Shorts to titles</div><div class="d">Not required. YouTube makes vertical videos up to 3 minutes into Shorts by itself.</div></div>${tog('addShortsTag')}</div>
     </div>
 
-    <h2>TikTok</h2>
-    <div class="card"><div class="t" style="font-weight:650">How Echoreel posts to TikTok</div>
+    ${sec('TikTok')}
+    <div class="card"><div class="t">How Echoreel posts to TikTok</div>
       <div class="radio">${radio('tiktokMode', 'inbox', 'Send to my TikTok inbox (recommended)', 'The video appears in TikTok as a draft notification. You tap it, add a sound if you like, and post. Works without TikTok’s audit.')}
       ${radio('tiktokMode', 'direct', 'Post directly', 'Needs TikTok to audit your app. Before that TikTok only allows private ("Only me") posts. Changing this needs a reconnect.')}</div>
-      <div class="opt" style="margin-top:12px"><div class="grow"><div class="t">Visibility for direct posts</div></div>${sel('tiktokPrivacy', [['PUBLIC_TO_EVERYONE', 'Everyone'], ['FOLLOWER_OF_CREATOR', 'Followers'], ['MUTUAL_FOLLOW_FRIENDS', 'Friends'], ['SELF_ONLY', 'Only me']])}</div>
+      <div class="opt"><div class="grow"><div class="t">Visibility for direct posts</div></div>${sel('tiktokPrivacy', [['PUBLIC_TO_EVERYONE', 'Everyone'], ['FOLLOWER_OF_CREATOR', 'Followers'], ['MUTUAL_FOLLOW_FRIENDS', 'Friends'], ['SELF_ONLY', 'Only me']])}</div>
     </div>`;
 }
 
@@ -447,21 +488,21 @@ function updateRow() {
       break;
     case 'ready':
       d = u.blocked ? esc(u.blocked) : `Echoreel ${esc(u.version)} is downloaded. It installs itself the next time Echoreel is in the background (window closed, nothing uploading), or restart now.`;
-      if (u.error) d += `<div class="err" style="margin-top:6px">${esc(u.error)}</div>`;
+      if (u.error) d += `<div class="err">${esc(u.error)}</div>`;
       btn = u.blocked ? '' : `<button class="btn small primary" data-act="updateInstall">Restart now</button>`;
       break;
     case 'installing':
       d = `Installing Echoreel ${esc(u.version)}${V.progress ? ' once the current upload finishes' : ''}. It reopens by itself.`;
       break;
     case 'error':
-      d = `<div class="err">${esc(u.error ?? 'The update check failed.')}</div>${u.retryAt ? `<div class="small faint" style="margin-top:4px">Echoreel tries again ${until(u.retryAt)}.</div>` : ''}`;
+      d = `<div class="err">${esc(u.error ?? 'The update check failed.')}</div>${u.retryAt ? `<div class="small faint" style="margin-top:6px">Echoreel tries again ${until(u.retryAt)}.</div>` : ''}`;
       btn = check;
       break;
     default:
       d = V.app.packaged ? `You’re on the latest version${u.checkedAt ? ` (checked ${ago(u.checkedAt)})` : ''}. New versions download and install by themselves.` : 'Updates are checked in the installed app.';
       btn = V.app.packaged ? check : '';
   }
-  return `<div class="opt"><div class="grow"><div class="t">Updates · Echoreel ${esc(V.app.version)}</div><div class="d">${d}</div></div>${btn}</div>`;
+  return `<div class="opt"><div class="grow"><div class="t">Updates</div><div class="d">${d}</div></div>${btn}</div>`;
 }
 
 function settings() {
@@ -483,12 +524,12 @@ function settings() {
         .join('')}</select></div>
       <div class="opt"><div class="grow"><div class="t">Keep downloaded videos for</div><div class="d">Copies Echoreel made while relaying. Deleted after this.</div></div><select data-set="keepDays">${[1, 3, 7, 14, 30].map((d) => `<option value="${d}" ${s.keepDays === d ? 'selected' : ''}>${d} day${d > 1 ? 's' : ''}</option>`).join('')}</select></div>
     </div>
-    <h2>Behind the scenes</h2>
+    ${sec('Behind the scenes')}
     <div class="card">
       ${updateRow()}
       <div class="opt"><div class="grow"><div class="t">Data folder</div><div class="d mono ellipsis">${esc(V.app.dataDir)}</div></div><button class="btn small" data-act="openData">Open</button><button class="btn small ghost" data-act="openLog">Log</button></div>
-      <div class="opt"><div class="grow"><div class="t">Video tools</div><div class="d mono">${tools ? `ffmpeg ${esc(tools.ffmpeg.replace(/^ffmpeg version /, '').split(' ')[0])} · yt-dlp ${esc(tools.ytdlp)} · ${esc(tools.cloudflared.replace(/ \(built.*/, ''))}` : 'checking…'}</div></div><button class="btn small" data-act="updateYtdlp">Update yt-dlp</button></div>
-      <div class="opt"><div class="grow"><div class="t">About</div><div class="d">Echoreel is free and open source (MIT). <a href="https://echoreel.vercel.app" target="_blank">Website</a> · <a href="https://github.com/tamoghnakabi-wq/echoreel" target="_blank">GitHub</a> · <a href="https://github.com/tamoghnakabi-wq/echoreel/releases" target="_blank">Releases</a></div></div></div>
+      <div class="opt"><div class="grow"><div class="t">Video tools</div><div class="d mono">${tools ? `ffmpeg ${esc(tools.ffmpeg.replace(/^ffmpeg version /, '').split(' ')[0])}, yt-dlp ${esc(tools.ytdlp)}, ${esc(tools.cloudflared.replace(/ \(built.*/, ''))}` : 'checking…'}</div></div><button class="btn small" data-act="updateYtdlp">Update yt-dlp</button></div>
+      <div class="opt"><div class="grow"><div class="t">About</div><div class="d">Echoreel is free and open source (MIT). <a href="https://echoreel.vercel.app" target="_blank">Website</a>, <a href="https://github.com/tamoghnakabi-wq/echoreel" target="_blank">source code</a> and <a href="https://github.com/tamoghnakabi-wq/echoreel/releases" target="_blank">release notes</a>.</div></div></div>
     </div>`;
 }
 
@@ -731,6 +772,15 @@ async function submitPost() {
     post.busy = false;
   }
 }
+
+// Keyboard: Enter or Space on a focusable non-button control (the drop zone) acts like a click.
+document.addEventListener('keydown', (e) => {
+  const el = e.target as HTMLElement;
+  if ((e.key === 'Enter' || e.key === ' ') && el.dataset?.act && el.getAttribute('role') === 'button') {
+    e.preventDefault();
+    el.click();
+  }
+});
 
 // Drag and drop a video anywhere on the Post page.
 document.addEventListener('dragover', (e) => {
