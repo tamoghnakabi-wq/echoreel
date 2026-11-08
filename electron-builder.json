@@ -1,0 +1,42 @@
+{
+  "appId": "app.echoreel.desktop",
+  "productName": "Echoreel",
+  "copyright": "Copyright © 2026 Tamoghna Kabi",
+  "directories": { "app": "app", "output": "release", "buildResources": "build" },
+  "files": ["dist/**", "package.json"],
+  "asar": true,
+  "extraResources": [
+    { "from": "build", "to": "icons", "filter": ["icon.png", "tray.png", "trayTemplate.png", "trayTemplate@2x.png"] }
+  ],
+  "mac": {
+    "icon": "build/icon.png",
+    "category": "public.app-category.video",
+    "identity": "-",
+    "hardenedRuntime": false,
+    "gatekeeperAssess": false,
+    "extraResources": [{ "from": "tools/darwin-${arch}", "to": "bin" }],
+    "target": [
+      { "target": "dmg", "arch": ["arm64", "x64"] },
+      { "target": "zip", "arch": ["arm64", "x64"] }
+    ],
+    "artifactName": "Echoreel-mac-${arch}.${ext}",
+    "extendInfo": { "LSUIElement": false }
+  },
+  "dmg": { "artifactName": "Echoreel-mac-${arch}.${ext}", "title": "Echoreel ${version}" },
+  "win": {
+    "icon": "build/icon.png",
+    "extraResources": [{ "from": "tools/win32-${arch}", "to": "bin" }],
+    "target": [{ "target": "nsis", "arch": ["x64"] }],
+    "artifactName": "Echoreel-win-x64-setup.${ext}"
+  },
+  "nsis": {
+    "oneClick": true,
+    "perMachine": false,
+    "allowElevation": false,
+    "runAfterFinish": true,
+    "deleteAppDataOnUninstall": false,
+    "shortcutName": "Echoreel",
+    "artifactName": "Echoreel-win-x64-setup.${ext}"
+  },
+  "publish": null
+}

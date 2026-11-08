@@ -1,0 +1,27 @@
+{
+  "name": "echoreel",
+  "productName": "Echoreel",
+  "version": "0.1.0",
+  "description": "Post a video once — Echoreel relays it to YouTube, Instagram and TikTok.",
+  "author": "Tamoghna Kabi",
+  "license": "MIT",
+  "private": true,
+  "main": "dist/main.js",
+  "homepage": "https://github.com/tamoghnakabi-wq/echoreel",
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "start": "node scripts/build.mjs && electron .",
+    "typecheck": "tsc --noEmit -p .",
+    "tools": "node scripts/fetch-tools.mjs",
+    "test": "node scripts/build.mjs && node test/e2e.mjs",
+    "dist:mac": "node scripts/package.mjs mac",
+    "dist:win": "node scripts/package.mjs win"
+  },
+  "devDependencies": {
+    "@types/node": "^22",
+    "electron": "44.10.2",
+    "electron-builder": "^26.15.3",
+    "esbuild": "^0.28.2",
+    "typescript": "^5"
+  }
+}

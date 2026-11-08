@@ -1,0 +1,9 @@
+node_modules/
+dist/
+release/
+app/
+tools/
+.vercel
+.DS_Store
+*.log
+.secrets/

@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Echoreel · Post once, everywhere</title>
+<meta name="description" content="Echoreel is a free desktop app for macOS and Windows that relays your new YouTube, Instagram and TikTok videos to your other accounts.">
+<link rel="icon" type="image/png" href="favicon.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta property="og:title" content="Echoreel · Post once, everywhere">
+<meta property="og:description" content="Upload a video on YouTube, Instagram or TikTok and Echoreel posts it to the others.">
+<meta property="og:image" content="img/approve.webp">
+<style>
+  :root {
+    --bg: #0b0b10; --panel: #13131a; --line: #23232e; --text: #ececf2; --muted: #9a9aab;
+    --pink: #ec4899; --violet: #8b5cf6; --blue: #3b82f6;
+    --grad: linear-gradient(120deg, var(--pink), var(--violet) 55%, var(--blue));
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { margin: 0; background: var(--bg); color: var(--text); font: 16px/1.6 -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Roboto, sans-serif; -webkit-font-smoothing: antialiased; }
+  a { color: inherit; }
+  .wrap { max-width: 1080px; margin: 0 auto; padding: 0 20px; }
+  nav { display: flex; align-items: center; justify-content: space-between; padding: 20px 0; }
+  .brand { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 18px; text-decoration: none; }
+  .brand img { width: 32px; height: 32px; border-radius: 8px; }
+  nav .links a { color: var(--muted); text-decoration: none; margin-left: 22px; font-size: 15px; }
+  nav .links a:hover { color: var(--text); }
+  .hero { text-align: center; padding: 64px 0 40px; position: relative; }
+  .hero::before { content: ""; position: absolute; inset: -80px 10% auto; height: 380px; background: radial-gradient(closest-side, rgba(139,92,246,.28), transparent); z-index: -1; }
+  h1 { font-size: clamp(38px, 6.4vw, 66px); line-height: 1.05; letter-spacing: -0.03em; margin: 0 0 18px; }
+  h1 span { background: var(--grad); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .lede { font-size: clamp(17px, 2.2vw, 20px); color: var(--muted); max-width: 620px; margin: 0 auto 32px; }
+  .btns { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+  .btn { display: inline-flex; align-items: center; gap: 10px; padding: 14px 22px; border-radius: 12px; font-weight: 600; text-decoration: none; border: 1px solid var(--line); background: var(--panel); }
+  .btn.primary { background: var(--grad); border: 0; color: #fff; box-shadow: 0 8px 30px rgba(139,92,246,.35); }
+  .btn:hover { filter: brightness(1.08); }
+  .small { color: var(--muted); font-size: 14px; margin-top: 14px; }
+  .small a { color: var(--text); }
+  .relay { display: flex; align-items: center; justify-content: center; gap: 14px; margin: 44px 0 8px; flex-wrap: wrap; }
+  .chip { display: flex; align-items: center; gap: 8px; padding: 10px 16px; border-radius: 999px; background: var(--panel); border: 1px solid var(--line); font-weight: 600; font-size: 15px; }
+  .dot { width: 12px; height: 12px; border-radius: 4px; }
+  .arrow { color: var(--violet); font-size: 22px; animation: pulse 1.8s ease-in-out infinite; }
+  @keyframes pulse { 50% { opacity: .35; transform: translateX(3px); } }
+  @media (prefers-reduced-motion: reduce) { .arrow { animation: none; } }
+  .shot { margin: 40px auto 0; border-radius: 16px; overflow: hidden; border: 1px solid var(--line); box-shadow: 0 30px 80px rgba(0,0,0,.55); max-width: 1000px; }
+  .shot img { display: block; width: 100%; height: auto; }
+  section { padding: 72px 0 0; }
+  h2 { font-size: clamp(28px, 4vw, 38px); letter-spacing: -0.02em; margin: 0 0 10px; }
+  .sub { color: var(--muted); margin: 0 0 30px; max-width: 640px; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; }
+  .card { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 22px; }
+  .card h3 { margin: 0 0 6px; font-size: 17px; }
+  .card p { margin: 0; color: var(--muted); font-size: 15px; }
+  .split { display: grid; grid-template-columns: 1fr 1.2fr; gap: 36px; align-items: center; }
+  @media (max-width: 820px) { .split { grid-template-columns: 1fr; } nav .links a:not(.keep) { display: none; } }
+  table { width: 100%; border-collapse: collapse; font-size: 15px; }
+  th, td { text-align: left; padding: 14px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { color: var(--muted); font-weight: 600; font-size: 13px; text-transform: uppercase; letter-spacing: .06em; }
+  td:first-child { font-weight: 600; white-space: nowrap; }
+  td { color: #c9c9d6; }
+  .tablewrap { overflow-x: auto; background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 4px 10px; }
+  details { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 16px 20px; margin-bottom: 10px; }
+  summary { cursor: pointer; font-weight: 600; }
+  details p { color: var(--muted); margin: 10px 0 0; }
+  kbd { background: #1d1d27; border: 1px solid var(--line); border-radius: 6px; padding: 1px 6px; font: inherit; font-size: 14px; }
+  footer { padding: 72px 0 40px; color: var(--muted); font-size: 14px; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
+  .cta { text-align: center; background: var(--panel); border: 1px solid var(--line); border-radius: 20px; padding: 44px 20px; margin-top: 72px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <nav>
+    <a class="brand" href="#"><img src="img/icon.png" alt="">Echoreel</a>
+    <div class="links">
+      <a href="#how">How it works</a>
+      <a href="#limits">Platforms</a>
+      <a href="#install">Install help</a>
+      <a class="keep" href="https://github.com/tamoghnakabi-wq/echoreel">GitHub</a>
+    </div>
+  </nav>
+
+  <header class="hero">
+    <h1>Post once.<br><span>Everywhere.</span></h1>
+    <p class="lede">Upload a video on YouTube, Instagram or TikTok, and Echoreel posts it to your other accounts with your caption. A free desktop app for macOS and Windows.</p>
+    <div class="btns" id="dl">
+      <a class="btn primary" id="dl-main" href="https://github.com/tamoghnakabi-wq/echoreel/releases/latest">Download Echoreel</a>
+      <a class="btn" id="dl-alt" href="https://github.com/tamoghnakabi-wq/echoreel/releases/latest">All downloads</a>
+    </div>
+    <p class="small" id="dl-note">Free and open source · <span id="ver">latest version</span> · updates itself</p>
+
+    <div class="relay" aria-hidden="true">
+      <span class="chip"><span class="dot" style="background:#ef4444"></span>YouTube Short</span>
+      <span class="arrow">→</span>
+      <span class="chip"><span class="dot" style="background:linear-gradient(135deg,#f59e0b,#ec4899,#8b5cf6)"></span>Instagram Reel</span>
+      <span class="arrow">→</span>
+      <span class="chip"><span class="dot" style="background:linear-gradient(135deg,#22d3ee,#ec4899)"></span>TikTok</span>
+    </div>
+    <div class="shot"><img src="img/approve.webp" width="1600" height="1093" alt="Echoreel's Activity page: a new TikTok video waits for approval, with editable captions for YouTube and Instagram"></div>
+  </header>
+
+  <section id="how">
+    <h2>How it works</h2>
+    <p class="sub">Echoreel runs quietly on your computer and checks your accounts every few minutes.</p>
+    <div class="grid">
+      <div class="card"><h3>Relays new uploads</h3><p>A new Short becomes a Reel and a TikTok, a new Reel becomes a Short and a TikTok, and so on. You choose the routes.</p></div>
+      <div class="card"><h3>Never loops</h3><p>Echoreel recognises its own copies, and re-uploads of the same video by comparing frames, so nothing bounces back and forth.</p></div>
+      <div class="card"><h3>Only new videos</h3><p>Videos already on an account when you connect it are left alone. You can still relay any of them with one click.</p></div>
+      <div class="card"><h3>Ask first, if you like</h3><p>Turn on "Ask me first" and new videos wait in the app until you check the captions and click Relay.</p></div>
+      <div class="card"><h3>Fits every format</h3><p>Landscape videos are placed on a 9:16 frame over a blurred copy of themselves for Reels and TikTok.</p></div>
+      <div class="card"><h3>Updates itself</h3><p>New versions download in the background, are checked against a signing key built into the app, and install when Echoreel is idle.</p></div>
+    </div>
+  </section>
+
+  <section>
+    <div class="split">
+      <div>
+        <h2>You set the rules</h2>
+        <p class="sub">Pick which account feeds which, wait a few minutes before relaying to catch typos, keep long YouTube videos on YouTube, or post a video from your computer to everything at once.</p>
+      </div>
+      <div class="shot" style="margin:0"><img src="img/rules.webp" width="1600" height="1093" alt="Echoreel's Rules page with a grid of relay routes and posting options" loading="lazy"></div>
+    </div>
+  </section>
+
+  <section id="limits">
+    <h2>What each platform allows</h2>
+    <p class="sub">Echoreel signs in with your own free developer apps, so there's no Echoreel server and your accounts stay yours. The in-app guides take about 10 minutes per platform. Each platform limits apps that it hasn't reviewed:</p>
+    <div class="tablewrap">
+      <table>
+        <tr><th>Platform</th><th>You need</th><th>How posting works</th></tr>
+        <tr><td>YouTube</td><td>A Google Cloud project with the YouTube Data API</td><td>Uploads through the API stay private until Google approves your project. By default Echoreel prepares the video, copies the title and opens YouTube Studio so you can finish in one click.</td></tr>
+        <tr><td>Instagram</td><td>A Creator or Business account and a Meta app</td><td>Reels post directly. Instagram fetches the video through a temporary Cloudflare link that closes after a few minutes.</td></tr>
+        <tr><td>TikTok</td><td>A TikTok developer app (sandbox)</td><td>Videos arrive in your TikTok inbox. Tap the notification in the TikTok app to post.</td></tr>
+      </table>
+    </div>
+  </section>
+
+  <section id="install">
+    <h2>Installing</h2>
+    <p class="sub">Echoreel isn't signed with a paid Apple or Microsoft certificate yet, so your computer asks once before opening it.</p>
+    <details open><summary>macOS (Apple silicon or Intel)</summary>
+      <p>Open the <kbd>.dmg</kbd> and drag Echoreel to Applications. If macOS says it can't check the app, open <b>System Settings → Privacy &amp; Security</b>, scroll down and click <b>Open Anyway</b>. Run it from Applications, not from the disk image, so updates can install.</p></details>
+    <details><summary>Windows 10 and 11 (x64)</summary>
+      <p>Run the installer. If SmartScreen says it protected your PC, click <b>More info → Run anyway</b>. Echoreel installs for your user account only and starts with Windows.</p></details>
+    <details><summary>Where are my sign-ins stored?</summary>
+      <p>Only on your computer, encrypted with the macOS Keychain or Windows DPAPI. Echoreel talks only to YouTube, Instagram, TikTok, GitHub (for updates) and, while posting a Reel, Cloudflare's temporary link service. There are no analytics.</p></details>
+    <details><summary>Does my computer need to stay on?</summary>
+      <p>Yes. Echoreel runs on your computer, so it relays while the computer is awake. Anything posted while it was off is picked up the next time it checks.</p></details>
+    <details><summary>Is it free?</summary>
+      <p>Yes, and the source code is on <a href="https://github.com/tamoghnakabi-wq/echoreel">GitHub</a> under the MIT license.</p></details>
+  </section>
+
+  <div class="cta">
+    <h2>Post once. Let it echo.</h2>
+    <p class="sub" style="margin:0 auto 24px">For macOS 12+ and Windows 10/11.</p>
+    <div class="btns">
+      <a class="btn primary" href="https://github.com/tamoghnakabi-wq/echoreel/releases/latest/download/Echoreel-mac-arm64.dmg">macOS · Apple silicon</a>
+      <a class="btn" href="https://github.com/tamoghnakabi-wq/echoreel/releases/latest/download/Echoreel-mac-x64.dmg">macOS · Intel</a>
+      <a class="btn" href="https://github.com/tamoghnakabi-wq/echoreel/releases/latest/download/Echoreel-win-x64-setup.exe">Windows</a>
+    </div>
+  </div>
+
+  <footer>
+    <span>© 2026 Tamoghna Kabi · MIT license · Not affiliated with YouTube, Instagram or TikTok.</span>
+    <span><a href="https://github.com/tamoghnakabi-wq/echoreel/releases">Release notes</a> · <a href="https://github.com/tamoghnakabi-wq/echoreel/issues">Report a problem</a></span>
+  </footer>
+</div>
+
+<script>
+  const base = 'https://github.com/tamoghnakabi-wq/echoreel/releases/latest/download/';
+  const files = { macArm: 'Echoreel-mac-arm64.dmg', macIntel: 'Echoreel-mac-x64.dmg', win: 'Echoreel-win-x64-setup.exe' };
+  const ua = navigator.userAgent;
+  const main = document.getElementById('dl-main'), alt = document.getElementById('dl-alt');
+  function appleSilicon() {
+    // Browsers report "Intel" on every Mac, so ask the GPU instead.
+    try {
+      const gl = document.createElement('canvas').getContext('webgl');
+      const ext = gl && gl.getExtension('WEBGL_debug_renderer_info');
+      const r = ext ? gl.getParameter(ext.UNMASKED_RENDERER_WEBGL) : '';
+      if (/Intel|AMD|Radeon|NVIDIA/i.test(r)) return false;
+    } catch (e) {}
+    return true; // most Macs sold since 2020
+  }
+  if (/Windows/.test(ua)) {
+    main.href = base + files.win; main.textContent = 'Download for Windows';
+  } else if (/Macintosh|Mac OS X/.test(ua) && !/iPhone|iPad/.test(ua)) {
+    const arm = appleSilicon();
+    main.href = base + (arm ? files.macArm : files.macIntel);
+    main.textContent = 'Download for Mac';
+    alt.href = base + (arm ? files.macIntel : files.macArm);
+    alt.textContent = arm ? 'Intel Mac?' : 'Apple silicon Mac?';
+  } else {
+    main.href = '#install'; main.textContent = 'Get it for Mac or Windows';
+  }
+  fetch('https://api.github.com/repos/tamoghnakabi-wq/echoreel/releases/latest')
+    .then((r) => (r.ok ? r.json() : null))
+    .then((j) => { if (j && j.tag_name) document.getElementById('ver').textContent = 'version ' + j.tag_name.replace(/^v/, ''); })
+    .catch(() => {});
+</script>
+</body>
+</html>

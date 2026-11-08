@@ -1,0 +1,114 @@
+name: Release
+
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+    inputs:
+      publish:
+        description: Publish a GitHub release (otherwise build and test only)
+        type: boolean
+        default: false
+
+# Read-only by default: the build jobs run npm packages' install scripts, which must not get a
+# token that can push or change releases. Only the publish job, which installs nothing, can write.
+permissions:
+  contents: read
+
+jobs:
+  mac:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: { persist-credentials: false }
+      - uses: actions/setup-node@v4
+        with: { node-version: 24, cache: npm }
+      - run: npm ci
+      - run: npm run typecheck
+      - name: Fetch the bundled tools (ffmpeg, yt-dlp, cloudflared)
+        run: |
+          node scripts/fetch-tools.mjs darwin arm64
+          node scripts/fetch-tools.mjs darwin x64
+      # The relay engine against mock YouTube/Instagram/TikTok APIs, with the exact tools the app ships.
+      - name: End-to-end test
+        run: npm run build && node test/e2e.mjs
+        env: { ECHOREEL_TOOLS: tools/darwin-arm64 }
+      - run: node scripts/package.mjs mac
+      - name: Self-test the packaged app (arm64)
+        run: ./release/mac-arm64/Echoreel.app/Contents/MacOS/Echoreel --selftest --update --use-mock-keychain
+        env: { ECHOREEL_DATA_DIR: '${{ runner.temp }}/echoreel-selftest' }
+      - name: Self-test the packaged app (x64, under Rosetta when available)
+        run: |
+          if arch -x86_64 /usr/bin/true 2>/dev/null; then
+            ECHOREEL_DATA_DIR="$RUNNER_TEMP/echoreel-selftest-x64" arch -x86_64 ./release/mac/Echoreel.app/Contents/MacOS/Echoreel --selftest --use-mock-keychain
+          else
+            echo "Rosetta isn't installed on this runner; skipping the x64 run"
+          fi
+      - uses: actions/upload-artifact@v4
+        with:
+          name: mac
+          path: |
+            release/*.dmg
+            release/*.zip
+          if-no-files-found: error
+
+  windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: { persist-credentials: false }
+      - uses: actions/setup-node@v4
+        with: { node-version: 24, cache: npm }
+      - run: npm ci
+      - run: node scripts/fetch-tools.mjs win32 x64
+      - name: End-to-end test
+        run: npm run build && node test/e2e.mjs
+        env: { ECHOREEL_TOOLS: tools/win32-x64 }
+      - run: node scripts/package.mjs win
+      - name: Install silently and self-test
+        shell: pwsh
+        run: |
+          $exe = Get-ChildItem release/*-setup.exe | Select-Object -First 1
+          Start-Process -FilePath $exe.FullName -ArgumentList '/S' -Wait
+          $app = Get-ChildItem (Join-Path $env:LOCALAPPDATA 'Programs') -Recurse -Filter Echoreel.exe -ErrorAction SilentlyContinue | Select-Object -First 1
+          if (!$app) { throw "Echoreel.exe was not installed under $env:LOCALAPPDATA\Programs" }
+          Write-Host "Installed at $($app.FullName)"
+          $env:ECHOREEL_DATA_DIR = Join-Path $env:RUNNER_TEMP 'echoreel-selftest'
+          $out = & $app.FullName --selftest --update | Out-String
+          Write-Host $out
+          if ($LASTEXITCODE -ne 0 -or $out -notmatch 'SELFTEST PASSED') { throw "Self-test failed" }
+      - uses: actions/upload-artifact@v4
+        with:
+          name: windows
+          path: release/*-setup.exe
+          if-no-files-found: error
+
+  publish:
+    needs: [mac, windows]
+    if: startsWith(github.ref, 'refs/tags/v') || inputs.publish
+    permissions:
+      contents: write
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: { persist-credentials: false }
+      - uses: actions/download-artifact@v4
+        with: { path: dist, merge-multiple: true }
+      - name: Sign the update manifest
+        env:
+          ECHOREEL_UPDATER_KEY: ${{ secrets.ECHOREEL_UPDATER_KEY }}
+        run: |
+          VERSION=$(node -p "require('./package.json').version")
+          echo "VERSION=$VERSION" >> "$GITHUB_ENV"
+          echo "TAG=v$VERSION" >> "$GITHUB_ENV"
+          node scripts/release-manifest.mjs "$VERSION" dist "${{ github.repository }}" "v$VERSION"
+      # Not a pre-release: releases/latest/download/<file> (the website's download buttons and the
+      # in-app updater) only ever points at the newest full release.
+      - name: Publish the release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          NOTES="releases/$TAG.md"
+          [ -f "$NOTES" ] || echo "Echoreel $VERSION" > "$NOTES"
+          gh release view "$TAG" --repo "${{ github.repository }}" >/dev/null 2>&1 || gh release create "$TAG" --repo "${{ github.repository }}" --title "Echoreel $VERSION" --notes-file "$NOTES" --latest
+          gh release upload "$TAG" --repo "${{ github.repository }}" dist/*.dmg dist/*.zip dist/*.exe dist/echoreel-update.json --clobber
