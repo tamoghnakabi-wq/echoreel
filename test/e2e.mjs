@@ -38,10 +38,10 @@ const V = {
   igReel: makeVideo('ig-reel.mp4', { w: 720, h: 1280, secs: 7, src: 'testsrc' }),
   ttWide: makeVideo('tt-wide.mp4', { w: 1280, h: 720, secs: 6, src: 'rgbtestsrc', audio: false }),
   local: makeVideo('local.mp4', { w: 1080, h: 1920, secs: 5, src: 'smptehdbars' }),
-  ytApprove: makeVideo('yt-approve.mp4', { w: 720, h: 1280, secs: 5, src: 'zoneplate' }),
+  ytApprove: makeVideo('yt-approve.mp4', { w: 720, h: 1280, secs: 5, src: 'cellauto=rule=110:random_seed=7' }),
 };
 
-const mock = await startMock({ dir: join(scratch, 'mock'), ffmpeg: tools.ffmpeg });
+const mock = await startMock({ dir: join(scratch, 'mock'), ffmpeg: tools.ffmpeg, ffprobe: tools.ffprobe });
 const call = async (path, body = {}) => (await fetch(mock.base + path, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) })).json();
 
 const notes = [];

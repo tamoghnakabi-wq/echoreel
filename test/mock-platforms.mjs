@@ -6,7 +6,7 @@ import { execFileSync } from 'node:child_process';
 import { copyFileSync, createReadStream, existsSync, mkdirSync, statSync, writeFileSync, readFileSync, appendFileSync } from 'node:fs';
 import { join } from 'node:path';
 
-export function startMock({ dir, ffmpeg = 'ffmpeg' }) {
+export function startMock({ dir, ffmpeg = 'ffmpeg', ffprobe = ffmpeg.replace(/ffmpeg(\.exe)?$/, 'ffprobe$1') }) {
   mkdirSync(dir, { recursive: true });
   let seq = 1000;
   const id = (p) => `${p}${++seq}`;
@@ -90,7 +90,7 @@ export function startMock({ dir, ffmpeg = 'ffmpeg' }) {
           if (!p || p.status !== 'SEND_TO_USER_INBOX') return json(res, 400, { error: 'no inbox draft' });
           const vid = id('7');
           execFileSync(ffmpeg, ['-y', '-v', 'error', '-i', p.file, '-vf', 'scale=576:-2', '-c:v', 'libx264', '-crf', '30', '-c:a', 'aac', '-b:a', '96k', fileFor('tiktok', vid)]);
-          const dur = Number(execFileSync('ffprobe', ['-v', 'error', '-show_entries', 'format=duration', '-of', 'csv=p=0', fileFor('tiktok', vid)]).toString());
+          const dur = Number(execFileSync(ffprobe, ['-v', 'error', '-show_entries', 'format=duration', '-of', 'csv=p=0', fileFor('tiktok', vid)]).toString());
           S.tt.videos.unshift({ id: vid, desc: body.caption ?? 'posted from inbox', create_time: Math.floor(Date.now() / 1000), duration: Math.round(dur) });
           p.status = 'PUBLISHED_BY_USER';
           return json(res, 200, { id: vid });
@@ -161,7 +161,7 @@ export function startMock({ dir, ffmpeg = 'ffmpeg' }) {
           if (buf.length !== sess.size) return json(res, 400, { error: { message: `expected ${sess.size} bytes, got ${buf.length}` } });
           const vid = id('ytup');
           writeFileSync(fileFor('youtube', vid), buf);
-          const dur = Math.round(Number(execFileSync('ffprobe', ['-v', 'error', '-show_entries', 'format=duration', '-of', 'csv=p=0', fileFor('youtube', vid)]).toString()));
+          const dur = Math.round(Number(execFileSync(ffprobe, ['-v', 'error', '-show_entries', 'format=duration', '-of', 'csv=p=0', fileFor('youtube', vid)]).toString()));
           S.yt.videos.unshift({ id: vid, title: sess.meta.snippet.title, description: sess.meta.snippet.description, publishedAt: new Date().toISOString(), duration: dur, privacy: sess.meta.status.privacyStatus, viaApi: true });
           return json(res, 200, { id: vid, snippet: sess.meta.snippet, status: { privacyStatus: sess.meta.status.privacyStatus, uploadStatus: 'uploaded' } });
         }
