@@ -251,9 +251,7 @@ function buildTray() {
     tray!.setContextMenu(
       Menu.buildFromTemplate([
         { label: 'Open Echoreel', click: () => showWindow() },
-        ...(updater.readyVersion && !installBlocked()
-          ? [{ label: `Restart to Update to ${updater.readyVersion}`, click: () => void updater.install(true) } as Electron.MenuItemConstructorOptions]
-          : []),
+        ...updateItems(),
         { type: 'separator' },
         { label: accounts.length ? `Watching ${accounts.join(', ')}` : 'No accounts connected', enabled: false },
         { label: 'Check for new videos now', enabled: accounts.length > 0 && !s.paused, click: () => checkAll() },
@@ -304,6 +302,204 @@ const LOGIN_ARGS = isWin ? { args: ['--hidden'] } : {};
 function setLoginItem(on: boolean) {
   if (!app.isPackaged) return;
   app.setLoginItemSettings({ openAtLogin: on, ...LOGIN_ARGS });
+}
+
+// ---------- menu bar ----------
+
+const SITE = 'https://echoreel.vercel.app';
+const REPO = 'https://github.com/tamoghnakabi-wq/echoreel';
+type Item = Electron.MenuItemConstructorOptions;
+
+/** A message box on the window when it's showing (a sheet on macOS), otherwise on its own in front. */
+function messageBox(o: Partial<Electron.MessageBoxOptions> & { message: string }) {
+  const opts: Electron.MessageBoxOptions = { type: 'info', buttons: ['OK'], ...o };
+  if (win && !win.isDestroyed() && win.isVisible()) return dialog.showMessageBox(win, opts);
+  app.focus({ steal: true });
+  return dialog.showMessageBox(opts);
+}
+
+/** "Check for Updates…", or what the updater is busy with instead. Shared by the menu bar and the tray. */
+function updateItems(): Item[] {
+  const u = updater.state;
+  const v = u.version ?? '';
+  switch (u.status) {
+    case 'checking':
+      return [{ label: 'Checking for Updates…', enabled: false }];
+    case 'downloading': {
+      // In steps of 10% so the menu isn't rebuilt for every chunk.
+      const pct = u.total ? Math.floor((10 * (u.received ?? 0)) / u.total) * 10 : 0;
+      return [{ label: `Downloading Echoreel ${v}… ${pct}%`, enabled: false }];
+    }
+    case 'installing':
+      return [{ label: `Installing Echoreel ${v}…`, enabled: false }];
+    case 'ready':
+      return [{ label: `Restart to Update to ${v}`, click: () => void restartToUpdate() }];
+    default:
+      return [{ label: 'Check for Updates…', click: () => void checkForUpdates() }];
+  }
+}
+
+// Set by a check from the menu that started a download: ask about restarting once it's in.
+let askWhenReady = false;
+
+async function checkForUpdates() {
+  const st = await updater.check();
+  if (st.status === 'idle') {
+    await messageBox({ message: 'You’re up to date', detail: `Echoreel ${__VERSION__} is the newest version.` });
+  } else if (st.status === 'error') {
+    await messageBox({ type: 'warning', message: 'Echoreel couldn’t check for updates', detail: `${st.error ?? 'The update check failed.'}\n\nIt tries again by itself later.` });
+  } else if (st.status === 'downloading') {
+    askWhenReady = true;
+  } else if (st.status === 'ready') {
+    await offerRestart();
+  }
+}
+
+/** Called on every updater change: finish what a menu check started. */
+function followUpCheck() {
+  if (!askWhenReady) return;
+  const st = updater.state;
+  if (st.status === 'ready') {
+    askWhenReady = false;
+    announced = st.version ?? ''; // this box says it; no notification as well
+    void offerRestart();
+  } else if (st.status === 'error') {
+    askWhenReady = false;
+    void messageBox({ type: 'warning', message: `Echoreel ${st.version ?? ''} didn’t download`, detail: `${st.error ?? ''}\n\nIt tries again by itself later.` });
+  }
+}
+
+async function offerRestart() {
+  const v = updater.readyVersion;
+  if (!v) return;
+  const blocked = installBlocked();
+  if (blocked) {
+    await messageBox({ message: `Echoreel ${v} is downloaded`, detail: blocked });
+    return;
+  }
+  const { response } = await messageBox({
+    message: `Echoreel ${v} is ready to install`,
+    detail: `You have ${__VERSION__}. Restart now to update, or Echoreel installs it by itself the next time its window is closed and nothing is uploading.`,
+    buttons: ['Restart to Update', 'Later'],
+    defaultId: 0,
+    cancelId: 1,
+  });
+  if (response === 0) await restartToUpdate();
+}
+
+async function restartToUpdate() {
+  const blocked = installBlocked();
+  if (blocked) {
+    await messageBox({ message: `Echoreel ${updater.readyVersion ?? ''} can’t install itself`, detail: blocked });
+    return;
+  }
+  if ((await updater.install(true)) === 'failed') {
+    await messageBox({ type: 'warning', message: 'The update didn’t install', detail: updater.state.error ?? 'See Settings for details.' });
+  }
+}
+
+let lastMenu = '';
+/** The menu bar: rebuilt only when something it shows has changed. */
+function refreshAppMenu() {
+  const mac = process.platform === 'darwin';
+  const s = engine.store.state.settings;
+  const accounts = PLATFORMS.filter((p) => engine.store.state.accounts[p]).map((p) => PLATFORM_NAMES[p]);
+  const open = (page: string) => () => showWindow({ page });
+  const settings: Item = { label: mac ? 'Settings…' : 'Settings', accelerator: 'CmdOrCtrl+,', click: open('settings') };
+  const sep: Item = { type: 'separator' };
+  const template: Item[] = [
+    ...(mac
+      ? [
+          {
+            label: 'Echoreel',
+            submenu: [
+              { role: 'about', label: 'About Echoreel' },
+              ...updateItems(),
+              sep,
+              settings,
+              sep,
+              { role: 'services' },
+              sep,
+              { role: 'hide', label: 'Hide Echoreel' },
+              { role: 'hideOthers' },
+              { role: 'unhide' },
+              sep,
+              { role: 'quit', label: 'Quit Echoreel' },
+            ],
+          } as Item,
+        ]
+      : []),
+    {
+      label: mac ? 'File' : '&File',
+      submenu: [
+        { label: 'Post a Video…', accelerator: 'CmdOrCtrl+N', click: open('post') },
+        sep,
+        ...(mac ? [{ role: 'close' } as Item] : [settings, sep, { label: 'Quit Echoreel', accelerator: 'Ctrl+Q', click: () => app.quit() } as Item]),
+      ],
+    },
+    { role: 'editMenu' },
+    {
+      label: mac ? 'View' : '&View',
+      submenu: [
+        { label: 'Activity', accelerator: 'CmdOrCtrl+1', click: open('activity') },
+        { label: 'Post a Video', accelerator: 'CmdOrCtrl+2', click: open('post') },
+        { label: 'Connections', accelerator: 'CmdOrCtrl+3', click: open('connections') },
+        { label: 'Rules', accelerator: 'CmdOrCtrl+4', click: open('rules') },
+        { label: 'Settings', accelerator: 'CmdOrCtrl+5', click: open('settings') },
+        sep,
+        { role: 'resetZoom' },
+        { role: 'zoomIn' },
+        { role: 'zoomOut' },
+        sep,
+        { role: 'togglefullscreen' },
+        // Developer tools stay out of the installed app.
+        ...(app.isPackaged ? [] : [sep, { role: 'reload', accelerator: 'CmdOrCtrl+Alt+R' } as Item, { role: 'toggleDevTools' } as Item]),
+      ],
+    },
+    {
+      label: mac ? 'Relay' : '&Relay',
+      submenu: [
+        { label: accounts.length ? `Watching ${accounts.join(', ')}` : 'No accounts connected', enabled: false },
+        sep,
+        { label: 'Check for New Videos Now', accelerator: 'CmdOrCtrl+R', enabled: accounts.length > 0 && !s.paused, click: () => checkAll() },
+        { label: s.paused ? 'Resume Relaying' : 'Pause Relaying', accelerator: 'CmdOrCtrl+Shift+P', click: () => setSettings({ paused: !s.paused }) },
+        sep,
+        { label: 'Connections…', click: open('connections') },
+        { label: 'Rules…', click: open('rules') },
+      ],
+    },
+    { role: 'windowMenu' },
+    {
+      role: 'help',
+      label: mac ? 'Help' : '&Help',
+      submenu: [
+        { label: 'Echoreel Website', click: () => void shell.openExternal(SITE) },
+        { label: 'Release Notes', click: () => void shell.openExternal(`${REPO}/releases`) },
+        { label: 'Report an Issue…', click: () => void shell.openExternal(`${REPO}/issues/new`) },
+        sep,
+        { label: 'Show Log File', click: () => void shell.openPath(logFile()) },
+        // Windows has no app menu: updates and About go at the end of Help.
+        ...(mac ? [] : [sep, ...updateItems(), { role: 'about', label: 'About Echoreel' } as Item]),
+      ],
+    },
+  ];
+  const sig = JSON.stringify(template);
+  if (sig === lastMenu) return;
+  lastMenu = sig;
+  Menu.setApplicationMenu(Menu.buildFromTemplate(template));
+}
+
+function buildAppMenu() {
+  app.setAboutPanelOptions({
+    applicationName: 'Echoreel',
+    applicationVersion: __VERSION__,
+    version: '',
+    copyright: 'Free and open source under the MIT License.',
+    website: SITE,
+    iconPath: iconPath('icon.png'),
+  });
+  refreshAppMenu();
+  engine.store.onChange(throttle(refreshAppMenu, 500));
 }
 
 // ---------- IPC ----------
@@ -427,6 +623,13 @@ async function screenshots(dir: string) {
     log(`shot ${spec}: open sections ${opened}`);
     writeFileSync(join(dir, `${spec.replace(/[@~+]/g, '-')}.png`), (await win!.webContents.capturePage()).toPNG());
   }
+  // The menu bar as text, since a capture of the window doesn't include it.
+  const outline = (m: Electron.Menu, depth: number): string[] =>
+    m.items.flatMap((i) => [
+      '  '.repeat(depth) + (i.type === 'separator' ? '---' : `${i.label || i.role}${i.accelerator ? `  [${i.accelerator}]` : ''}${i.enabled ? '' : '  (disabled)'}`),
+      ...(i.submenu ? outline(i.submenu, depth + 1) : []),
+    ]);
+  writeFileSync(join(dir, 'menu.txt'), outline(Menu.getApplicationMenu()!, 0).join('\n') + '\n');
   quitting = true;
   app.exit(0);
 }
@@ -488,6 +691,8 @@ async function main() {
     onChange: () => {
       if (win && !win.isDestroyed() && win.isVisible()) win.webContents.send('changed');
       refreshTray();
+      if (engine) refreshAppMenu(); // (not before startup has made it)
+      followUpCheck();
       announceUpdate();
     },
     drain: (ms) => engine.drain(ms),
@@ -521,6 +726,7 @@ async function main() {
   }
   createWindow();
   buildTray();
+  buildAppMenu();
   // First launch of an installed copy: start at login by default.
   // (A copy with its own data folder, for tests or portable use, never adds itself.)
   if (app.isPackaged && !process.env.ECHOREEL_DATA_DIR && !engine.store.state.flags.loginItemSet) {
